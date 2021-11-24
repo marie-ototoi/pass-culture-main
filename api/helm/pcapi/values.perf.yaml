@@ -77,8 +77,8 @@ api:
           - path: /
     tls:
       - secretName: pcapi-ingress-cert
-      hosts:
-        - backend.perf.internal-passculture.app
+        hosts:
+          - backend.perf.internal-passculture.app
 
 ### High Latency API deployment ###
 highLatencyApi:
@@ -134,8 +134,8 @@ highLatencyApi:
           - path: /venueProviders$
     tls:
       - secretName: pcapi-ingress-cert
-      hosts:
-        - backend.perf.internal-passculture.app
+        hosts:
+          - backend.perf.internal-passculture.app
 
 ### Signin deployment ###
 signinApi:
@@ -232,8 +232,8 @@ admin:
           - path: /pc/back-office/
     tls:
       - secretName: pcapi-ingress-cert
-      hosts:
-        - backend.perf.internal-passculture.app
+        hosts:
+          - backend.perf.internal-passculture.app
 
 ### Worker deployment ###
 workers:
@@ -387,8 +387,8 @@ uploadIdentityDocument:
           - path: /native/v1/identity_document$
     tls:
       - secretName: pcapi-ingress-cert
-      hosts:
-        - backend.perf.internal-passculture.app
+        hosts:
+          - backend.perf.internal-passculture.app
 
 # Deployment for all cloud tasks
 cloudTasks:
@@ -437,8 +437,8 @@ cloudTasks:
           - path: /cloud-tasks/(.*)$
     tls:
       - secretName: pcapi-ingress-cert
-      hosts:
-        - backend.perf.internal-passculture.app
+        hosts:
+          - backend.perf.internal-passculture.app
 
 aide:
   enabled: false
