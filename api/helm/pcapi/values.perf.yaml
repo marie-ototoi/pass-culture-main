@@ -456,6 +456,14 @@ configmap:
   GUNICORN_TIMEOUT: 90
   GUNICORN_LOG_LEVEL: info
   DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT: "1800000"
+  IS_PERFORMANCE_TESTS: true
+  RATE_LIMIT_BY_EMAIL: 999999/second
+  RATE_LIMIT_BY_IP: 999999/second
+  EMAIL_BACKEND: pcapi.core.mails.backends.logger.LoggerBackend
+  MAILJET_EMAIL_BACKEND: pcapi.core.mails.backends.logger.LoggerBackend
+  PUSH_NOTIFICATION_BACKEND: pcapi.notifications.push.backends.logger.LoggerBackend
+  SMS_NOTIFICATION_BACKEND: pcapi.notifications.sms.backends.logger.LoggerBackend
+  SEARCH_BACKEND: pcapi.core.search.backends.testing.TestingBackend
 
 configmapCloudTasks:
   GUNICORN_THREADS : 10
