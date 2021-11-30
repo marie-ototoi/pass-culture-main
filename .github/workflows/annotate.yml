@@ -2,7 +2,7 @@ name: Add annotated tag
 on:
   push:
     branches:
-      - master
+      - add-annotated-tags-to-master-builds
 jobs:
   add-annotated-tag:
     runs-on: ubuntu-latest
