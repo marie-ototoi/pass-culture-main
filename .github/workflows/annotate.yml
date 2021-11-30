@@ -20,3 +20,4 @@ jobs:
           tag_prefix: RC-
           default_bump: major
           release_branches: add-annotated-tags-to-master-builds
+          fetch_all_tags: true
