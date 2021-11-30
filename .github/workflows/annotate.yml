@@ -19,3 +19,4 @@ jobs:
           create_annotated_tag: true
           tag_prefix: RC-
           default_bump: major
+          release_branches: add-annotated-tags-to-master-builds
