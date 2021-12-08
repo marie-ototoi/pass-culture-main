@@ -16,6 +16,7 @@ import './Reimbursement.scss'
 import useActiveFeature from '../../hooks/useActiveFeature'
 
 import ReimbursementsDetails from './ReimbursementsDetails'
+import ReimbursementsProofs from './ReimbursementsProofs'
 
 const sortByKeyAlphabeticalOrder = keyName => (x, y) =>
   x[keyName].localeCompare(y[keyName])
@@ -153,11 +154,10 @@ const Reimbursements = ({ currentUser }) => {
                 id="refund-proof"
                 role="tabpanel"
               >
-                <div className="header">
-                  <h2 className="header-title">
-                    Affichage des justificatifs de remboursement
-                  </h2>
-                </div>
+                <ReimbursementsProofs
+                  isCurrentUserAdmin={currentUser.isAdmin}
+                  venuesOptions={venuesOptions}
+                />
               </div>
               <div
                 aria-hidden={!isRefundDetailsActive}
