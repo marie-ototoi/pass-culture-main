@@ -269,3 +269,21 @@ class SchoolTypeTest:
                 {"id": "PUBLIC_SECONDARY_SCHOOL", "label": "Collège public"},
             ],
         }
+
+
+class SwornStatementTest:
+    def test_create_sworn_statement_fraud_check(self, client):
+        user = users_factories.UserFactory()
+
+        client.with_token(user.email)
+
+        response = client.post("/native/v1/subscription/sworn_statement")
+
+        assert response.status_code == 204
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.SWORN_STATEMENT
+        ).first()
+
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.reason == "statement from /subscription/sworn_statement endpoint"
