@@ -339,6 +339,20 @@ class NextSubscriptionStepTest:
 
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
+    def test_next_subscription_step_sworn_statement(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city="Zanzibar",
+            hasCompletedIdCheck=True,
+        )
+        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+
+        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.SWORN_STATEMENT
+
     def test_next_subscription_step_finished(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
@@ -349,6 +363,12 @@ class NextSubscriptionStepTest:
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.SWORN_STATEMENT,
+            resultContent=None,
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
         )
 
         assert subscription_api.get_next_subscription_step(user) == None

@@ -25,6 +25,7 @@ class SubscriptionStep(enum.Enum):
     PROFILE_COMPLETION = "profile-completion"
     IDENTITY_CHECK = "identity-check"
     USER_PROFILING = "user-profiling"
+    SWORN_STATEMENT = "sworn-statement"
 
 
 class IdentityCheckMethod(enum.Enum):

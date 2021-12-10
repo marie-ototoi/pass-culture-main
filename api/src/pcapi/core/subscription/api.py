@@ -291,6 +291,9 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
     ):
         return models.SubscriptionStep.IDENTITY_CHECK
 
+    if not fraud_api.has_performed_sworn_statement(user):
+        return models.SubscriptionStep.SWORN_STATEMENT
+
     return None
 
 
@@ -325,7 +328,7 @@ def update_user_profile(
 
     if is_legacy_behaviour:
         # TODO (viconnex): remove phone number update after app native mandatory version is >= 164
-        if not user.phoneNumber and phone_number and not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() :
+        if not user.phoneNumber and phone_number and not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
             update_payload["phoneNumber"] = phone_number
         update_payload["hasCompletedIdCheck"] = True
         fraud_api.create_sworn_statement_fraud_check(user, "legacy /beneficiary_information route")

@@ -57,14 +57,14 @@ class NextStepTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status,next_step",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.INITIATED, None),
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.PROCESSING, None),
-            (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED, None),
-            (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.INITIATED, "sworn-statement"),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.PROCESSING, "sworn-statement"),
+            (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED, "sworn-statement"),
+            (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED, "sworn-statement"),
             (fraud_models.FraudCheckStatus.CANCELED, fraud_models.IdentificationStatus.ABORTED, "identity-check"),
-            (None, fraud_models.IdentificationStatus.INITIATED, None),
-            (None, fraud_models.IdentificationStatus.PROCESSING, None),
-            (None, fraud_models.IdentificationStatus.PROCESSED, None),
+            (None, fraud_models.IdentificationStatus.INITIATED, "sworn-statement"),
+            (None, fraud_models.IdentificationStatus.PROCESSING, "sworn-statement"),
+            (None, fraud_models.IdentificationStatus.PROCESSED, "sworn-statement"),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
