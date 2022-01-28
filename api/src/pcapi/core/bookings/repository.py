@@ -714,7 +714,7 @@ def _serialize_csv_report(query: Query) -> str:
                 booking.beneficiaryPhoneNumber,
                 _serialize_date_with_timezone(booking.bookedAt, booking),
                 _serialize_date_with_timezone(booking.usedAt, booking),
-                _get_booking_token(booking.token, booking.status, booking.stockBeginningDatetime),
+                str(_get_booking_token(booking.token, booking.status, booking.stockBeginningDatetime)),
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
                 _serialize_date_with_timezone(booking.reimbursedAt, booking),
