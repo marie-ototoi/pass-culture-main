@@ -22,8 +22,8 @@ def fr_percentage_filter(decimal_rate: decimal.Decimal) -> str:
 
 
 def fr_currency_filter(eurocents: int) -> float:
-    """Returns a localized str without signing nor currency symbol"""
-    amount_in_euros = to_euros(abs(eurocents))
+    """Returns a localized str with inverted signing and no currency symbol"""
+    amount_in_euros = to_euros(-eurocents)
     return numbers.format_decimal(amount_in_euros, format="#,##0.00", locale="fr_FR")
 
 
