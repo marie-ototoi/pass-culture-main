@@ -1,8 +1,8 @@
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
@@ -99,7 +99,7 @@ class AsDictTest:
         venue = create_venue(offerer)
         event_product = create_product_with_event_subcategory(event_name="My Event")
         offer = create_offer_with_event_product(venue, product=event_product)
-        mediation = create_mediation(offer)
+        mediation = offers_factories.MediationFactory(offer=offer)
         repository.save(mediation)
         EVENT_INCLUDES = [{"key": "mediations", "includes": ["thumbUrl"]}]
 
@@ -116,7 +116,7 @@ class AsDictTest:
         venue = create_venue(offerer)
         event_product = create_product_with_event_subcategory(event_name="My Event")
         offer = create_offer_with_event_product(venue, product=event_product)
-        mediation = create_mediation(offer)
+        mediation = offers_factories.MediationFactory(offer=offer)
         repository.save(mediation)
         EVENT_INCLUDES = [{"key": "mediations", "includes": ["-isActive"]}]
 

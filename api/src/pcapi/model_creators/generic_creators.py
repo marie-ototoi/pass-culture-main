@@ -6,7 +6,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -20,33 +19,6 @@ from pcapi.models.payment_message import PaymentMessage
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_offerer import UserOfferer
-
-
-def create_mediation(
-    offer: Offer = None,
-    author: User = None,
-    credit: str = None,
-    date_created: datetime = datetime.utcnow(),
-    date_modified_at_last_provider: datetime = None,
-    id_at_providers: str = None,
-    idx: int = None,
-    is_active: bool = True,
-    last_provider_id: int = None,
-    thumb_count: int = 0,
-) -> Mediation:
-    mediation = Mediation()
-    mediation.author = author
-    mediation.credit = credit
-    mediation.dateCreated = date_created
-    mediation.dateModifiedAtLastProvider = date_modified_at_last_provider
-    mediation.idAtProviders = id_at_providers
-    mediation.id = idx
-    mediation.isActive = is_active
-    mediation.lastProviderId = last_provider_id
-    mediation.offer = offer
-    mediation.thumbCount = thumb_count
-
-    return mediation
 
 
 def create_offerer(

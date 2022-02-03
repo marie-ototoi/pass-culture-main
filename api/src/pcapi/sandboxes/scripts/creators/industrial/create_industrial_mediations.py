@@ -3,7 +3,7 @@ from pathlib import Path
 from shutil import copyfile
 
 from pcapi.core.categories import subcategories
-from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.core.offers import factories as offers_factories
 from pcapi.repository import repository
 import pcapi.sandboxes
 from pcapi.sandboxes.scripts.utils.select import remove_every
@@ -48,7 +48,7 @@ def create_industrial_mediations(offers_by_name):
     offer_items = list(offers_by_name.items())
     offer_items_with_mediation = remove_every(offer_items, OFFERS_WITH_MEDIATION_REMOVE_MODULO)
     for (offer_with_mediation_name, offer_with_mediation) in offer_items_with_mediation:
-        mediations_by_name[offer_with_mediation_name] = create_mediation(offer_with_mediation)
+        mediations_by_name[offer_with_mediation_name] = offers_factories.MediationFactory(offer=offer_with_mediation)
 
     repository.save(*mediations_by_name.values())
 

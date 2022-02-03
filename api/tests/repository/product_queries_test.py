@@ -2,13 +2,12 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Favorite
-from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
@@ -52,7 +51,7 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_nothing_when_product_not_found(self, app):
         # Given
         isbn = "1111111111111"
-        ProductFactory(
+        offers_factories.ProductFactory(
             idAtProviders=isbn, isSynchronizationCompatible=False, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
 
@@ -87,7 +86,7 @@ class DeleteUnwantedExistingProductTest:
     ):
         # Given
         isbn = "1111111111111"
-        product = ProductFactory(
+        product = offers_factories.ProductFactory(
             idAtProviders=isbn,
             isGcuCompatible=True,
             isSynchronizationCompatible=True,
@@ -115,7 +114,7 @@ class DeleteUnwantedExistingProductTest:
         product = create_product_with_thing_subcategory(id_at_providers=isbn)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
-        mediation = create_mediation(offer=offer)
+        mediation = offers_factories.MediationFactory(offer=offer)
 
         repository.save(venue, product, offer, stock, mediation)
 
@@ -138,7 +137,7 @@ class DeleteUnwantedExistingProductTest:
         product = create_product_with_thing_subcategory(id_at_providers=isbn)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
-        mediation = create_mediation(offer=offer)
+        mediation = offers_factories.MediationFactory(offer=offer)
         favorite = users_factories.FavoriteFactory(mediation=mediation, offer=offer, user=beneficiary)
 
         repository.save(venue, product, offer, stock, mediation, favorite)
@@ -206,7 +205,7 @@ class FindActiveBookProductByIsbnTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_not_synchronization_compatible_product(self, app):
         valid_isbn = "1111111111111"
-        ProductFactory(
+        offers_factories.ProductFactory(
             idAtProviders=valid_isbn,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             isSynchronizationCompatible=False,
