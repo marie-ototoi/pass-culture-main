@@ -8,7 +8,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_payment_message
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
@@ -23,9 +22,9 @@ class FindPaymentsByMessageTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary)
         offerer = booking.offerer
-        transaction1 = create_payment_message(name="XML1")
-        transaction2 = create_payment_message(name="XML2")
-        transaction3 = create_payment_message(name="XML3")
+        transaction1 = factories.PaymentMessageFactory(name="XML1")
+        transaction2 = factories.PaymentMessageFactory(name="XML2")
+        transaction3 = factories.PaymentMessageFactory(name="XML3")
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
         payments = [
             create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1),
@@ -50,9 +49,9 @@ class FindPaymentsByMessageTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary)
         offerer = booking.offerer
-        message1 = create_payment_message(name="XML1")
-        message2 = create_payment_message(name="XML2")
-        message3 = create_payment_message(name="XML3")
+        message1 = factories.PaymentMessageFactory(name="XML1")
+        message2 = factories.PaymentMessageFactory(name="XML2")
+        message3 = factories.PaymentMessageFactory(name="XML3")
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
         payments = [
             create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=message1),

@@ -8,6 +8,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.payments import factories as payment_factories
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -89,7 +90,7 @@ def create_payment(
     payment.iban = iban
     payment.id = idx
     if payment_message_name:
-        payment.paymentMessage = create_payment_message(name=payment_message_name)
+        payment.paymentMessage = payment_factories.PaymentMessageFactory(name=payment_message_name)
     elif payment_message:
         payment.paymentMessage = payment_message
     payment.recipientName = offerer.name
@@ -101,15 +102,6 @@ def create_payment(
     payment.transactionLabel = transaction_label
 
     return payment
-
-
-def create_payment_message(checksum: str = None, idx: int = None, name: str = "ABCD123") -> PaymentMessage:
-    payment_message = PaymentMessage()
-    payment_message.checksum = checksum if checksum else sha256(name.encode("utf-8")).digest()
-    payment_message.id = idx
-    payment_message.name = name
-
-    return payment_message
 
 
 def create_provider(

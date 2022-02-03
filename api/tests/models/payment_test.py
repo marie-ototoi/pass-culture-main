@@ -4,9 +4,9 @@ from datetime import timedelta
 import pytest
 
 import pcapi.core.bookings.factories as booking_factories
+from pcapi.core.payments import factories as payments_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_payment_message
 from pcapi.model_creators.generic_creators import create_payment_status
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import PaymentStatus
@@ -102,7 +102,7 @@ class PaymentDateTest:
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             booking = booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary)
             today = datetime.utcnow()
-            payment_message = create_payment_message(name="mon message")
+            payment_message = payments_factories.PaymentMessageFactory(name="mon message")
             payment = create_payment(booking, booking.offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.SENT, date=today)
 
@@ -121,7 +121,7 @@ class PaymentDateTest:
             booking = booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary)
             today = datetime.utcnow()
             yesterday = datetime.utcnow() - timedelta(days=1)
-            payment_message = create_payment_message(name="mon message")
+            payment_message = payments_factories.PaymentMessageFactory(name="mon message")
             payment = create_payment(booking, booking.offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.SENT, date=today)
             create_payment_status(payment, status=TransactionStatus.SENT, date=yesterday)
@@ -140,7 +140,7 @@ class PaymentDateTest:
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             booking = booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary)
             today = datetime.utcnow()
-            payment_message = create_payment_message(name="mon message")
+            payment_message = payments_factories.PaymentMessageFactory(name="mon message")
             payment = create_payment(booking, booking.offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.PENDING, date=today)
 

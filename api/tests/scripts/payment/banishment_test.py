@@ -3,8 +3,8 @@ import uuid
 import pytest
 
 import pcapi.core.bookings.factories as booking_factories
+from pcapi.core.payments import factories as payment_factories
 from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_payment_message
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.scripts.payment.banishment import do_ban_payments
@@ -17,9 +17,9 @@ class DoBanPaymentsTest:
         booking = booking_factories.IndividualBookingFactory()
         offerer = booking.offerer
 
-        transaction1 = create_payment_message(name="XML1")
-        transaction2 = create_payment_message(name="XML2")
-        transaction3 = create_payment_message(name="XML3")
+        transaction1 = payment_factories.PaymentMessageFactory(name="XML1")
+        transaction2 = payment_factories.PaymentMessageFactory(name="XML2")
+        transaction3 = payment_factories.PaymentMessageFactory(name="XML3")
 
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 
@@ -49,8 +49,8 @@ class DoBanPaymentsTest:
         booking = booking_factories.IndividualBookingFactory()
         offerer = booking.offerer
 
-        transaction1 = create_payment_message(name="XML1")
-        transaction2 = create_payment_message(name="XML2")
+        transaction1 = payment_factories.PaymentMessageFactory(name="XML1")
+        transaction2 = payment_factories.PaymentMessageFactory(name="XML2")
 
         uuid1, uuid2 = uuid.uuid4(), uuid.uuid4()
 
