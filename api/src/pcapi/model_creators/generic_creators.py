@@ -16,20 +16,11 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models.criterion import Criterion
 from pcapi.models.payment import Payment
 from pcapi.models.payment_message import PaymentMessage
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_offerer import UserOfferer
-
-
-def create_criterion(description: str = None, name: str = "best offer", score_delta: int = 1) -> Criterion:
-    criterion = Criterion()
-    criterion.name = name
-    criterion.description = description
-
-    return criterion
 
 
 def create_favorite(idx: int = None, mediation: Mediation = None, offer: Offer = None, user: User = None) -> Favorite:

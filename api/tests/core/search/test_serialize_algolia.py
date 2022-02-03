@@ -8,8 +8,8 @@ import pytest
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends.algolia import AlgoliaBackend
-from pcapi.model_creators.generic_creators import create_criterion
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
@@ -370,7 +370,7 @@ class BuildObjectTest:
             name="Venue name",
             public_name="Venue public name",
         )
-        criterion = create_criterion(description="Ma super offre", name="Mon tag associé", score_delta=0)
+        criterion = offers_factories.CriterionFactory(description="Ma super offre", name="Mon tag associé")
         offer = create_offer_with_event_product(
             venue=venue,
             description="Un lit sous une rivière",
@@ -449,8 +449,8 @@ class BuildObjectTest:
             name="Venue name",
             public_name="Venue public name",
         )
-        criterion1 = create_criterion(description="Ma super offre", name="Mon tag associé", score_delta=0)
-        criterion2 = create_criterion(description="Avengers", name="Iron Man mon super héros", score_delta=0)
+        criterion1 = offers_factories.CriterionFactory(description="Ma super offre", name="Mon tag associé")
+        criterion2 = offers_factories.CriterionFactory(description="Avengers", name="Iron Man mon super héros")
         offer = create_offer_with_event_product(
             venue=venue,
             description="Un lit sous une rivière",
