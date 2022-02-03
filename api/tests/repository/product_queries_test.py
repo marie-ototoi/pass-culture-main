@@ -8,7 +8,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Favorite
-from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
@@ -140,7 +139,7 @@ class DeleteUnwantedExistingProductTest:
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
         mediation = create_mediation(offer=offer)
-        favorite = create_favorite(mediation=mediation, offer=offer, user=beneficiary)
+        favorite = users_factories.FavoriteFactory(mediation=mediation, offer=offer, user=beneficiary)
 
         repository.save(venue, product, offer, stock, mediation, favorite)
 
