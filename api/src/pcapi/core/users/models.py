@@ -18,6 +18,7 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.functions import func
+import sqlalchemy.dialects.postgresql as sqla_psql
 
 from pcapi import settings
 from pcapi.core.users import utils as users_utils
@@ -516,6 +517,8 @@ class Favorite(PcObject, Model):
     mediation = orm.relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
 
     dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
+
+    extra = sa.Column(sqla_psql.JSONB, nullable=True)
 
     __table_args__ = (
         sa.UniqueConstraint(

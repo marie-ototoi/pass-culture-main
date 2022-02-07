@@ -8,6 +8,9 @@ import sqlalchemy
 from sqlalchemy.sql.functions import func
 
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.bookings.models import Booking
+from pcapi.core.users.models import Favorite
+from pcapi.core.offers.models import Offer, Stock
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models import db
@@ -132,4 +135,17 @@ def get_earliest_identity_check_date_of_eligibility(
             fraud_models.BeneficiaryFraudCheck.user == user,
         )
         .scalar()
+    )
+
+
+def get_users_inactive_favorites(user: User) -> list:
+    favorites = (
+        Favorite.query.join(Offer)
+        .join(Stock)
+        .join(Booking)
+        .filter(Stock.quantity > 0)
+        .filter(Booking.stock == None)
+        .filter(Stock.isExpired == False)
+        .filter(Favorite.userId == user.id)
+        .filter(Favorite.extra.data["notification"] == None)
     )
