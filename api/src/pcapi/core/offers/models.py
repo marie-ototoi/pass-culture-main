@@ -111,9 +111,13 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     def isEventExpired(cls):  # pylint: disable=no-self-argument
         return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
 
-    @property
+    @sa.ext.hybrid.hybrid_property
     def isExpired(self):
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
+
+    @isExpired.expression
+    def isExpired(self):
+        return sa.or_(self.isEventExpired, self.hasBookingLimitDatetimePassed)
 
     @property
     def isEventDeletable(self):
