@@ -1,9 +1,11 @@
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import exceptions
@@ -110,3 +112,70 @@ class GetApplicantOfOffererUnderValidationTest:
         # Then
         assert len(applicants_found) == 1
         assert applicants_found[0].id == applicant.id
+
+
+class GetUsersInactiveFavoritesTest:
+    def test_get_favorites(self):
+        """
+        Test that the function returns the one and only expected
+        favorite within all the other ones.
+        """
+        three_days_ago = date.today() - timedelta(days=3)
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        stock = offers_factories.EventStockFactory()
+        expected_favorite = users_factories.FavoriteFactory(offer=stock.offer, user=user, dateCreated=three_days_ago)
+
+        # 1. Notification for this favorite already sent
+        stock = offers_factories.EventStockFactory()
+        users_factories.FavoriteFactory(
+            offer=stock.offer, user=user, dateCreated=three_days_ago, extra={"notification": date.today()}
+        )
+
+        # 2. Favorite created less than three days ago
+        stock = offers_factories.EventStockFactory()
+        users_factories.FavoriteFactory(offer=stock.offer, user=user)
+
+        # 3. Favorite linked to an offer that has no stock left
+        stock = offers_factories.EventStockFactory(quantity=0)
+        users_factories.FavoriteFactory(offer=stock.offer, user=user)
+
+        # 4. Favorite linked to an expired offer
+        stock = offers_factories.EventStockFactory(beginningDatetime=three_days_ago)
+        users_factories.FavoriteFactory(offer=stock.offer, user=user)
+
+        # 5. Favorite linked to an offer that have already been booked
+        offer = offers_factories.DigitalOfferFactory()
+        stock = offers_factories.StockFactory(offer=offer)
+        bookings_factories.BookingFactory(stock=stock, user=user)
+        users_factories.FavoriteFactory(offer=offer, user=user)
+
+        res = list(repository.get_inactive_favorites_for_notification())
+        assert res == [expected_favorite]
+
+    def test_no_favorites(self):
+        """
+        Test that the function does not crash and returns nothing
+        """
+        assert not list(repository.get_inactive_favorites_for_notification())
+
+
+class GetSubcategoriesCountPerUserTest:
+    def test_get_subcategories_count_per_user(self):
+        stock = offers_factories.ThingStockFactory()
+        subcategory_ids = {stock.offer.subcategoryId}
+
+        users = users_factories.BeneficiaryGrant18Factory.create_batch(3)
+        user_ids = {user.id for user in users}
+
+        # For each user, create a different number of bookings
+        for idx, user in enumerate(users, start=1):
+            bookings_factories.BookingFactory.create_batch(idx, stock=stock, user=user)
+
+        res = repository.get_subcategories_count_per_user(user_ids, subcategory_ids)
+        res = sorted(res, key=lambda x: x.user_id)
+
+        assert res == [
+            repository.SubcategoryCount(user_id=user.id, subcategory=stock.offer.subcategoryId, count=count)
+            for count, user in enumerate(users, start=1)
+        ]

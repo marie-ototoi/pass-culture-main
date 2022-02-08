@@ -1,17 +1,22 @@
+from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 import logging
+import typing
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 import sqlalchemy
+from sqlalchemy import orm as sa_orm
 from sqlalchemy.sql.functions import func
 
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.bookings.models import Booking
-from pcapi.core.users.models import Favorite
-from pcapi.core.offers.models import Offer, Stock
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import Favorite
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models import db
 from pcapi.models.user_offerer import UserOfferer
@@ -138,14 +143,59 @@ def get_earliest_identity_check_date_of_eligibility(
     )
 
 
-def get_users_inactive_favorites(user: User) -> list:
-    favorites = (
-        Favorite.query.join(Offer)
+def get_inactive_favorites_for_notification() -> typing.Generator[Favorite, None, None]:
+    """
+    Find favorites that:
+        * have been created three days ago;
+        * have not been booked by the user;
+        * are linked to an offer with some stock and that is not expired;
+        * have not been marked as sent (notification).
+
+    These favorites can be used to sent notifications to their users.
+    This is why the three days ago rule: no need to send a notification
+    to user that added a favorite a few hours ago (for example).
+    """
+    three_days_ago = date.today() - timedelta(days=3)
+
+    return (
+        Favorite.query.distinct(Favorite.id)  # remove duplicate rows explicitly
+        .options(
+            sa_orm.contains_eager(Favorite.offer).load_only(Offer.id, Offer.subcategoryId),
+            sa_orm.contains_eager(Favorite.user).load_only(models.User.id),
+        )
+        .join(Offer)
         .join(Stock)
-        .join(Booking)
+        .join(Booking, isouter=True)
+        .filter(Favorite.extra["notification"] == None)
+        .filter(Favorite.dateCreated <= three_days_ago)
         .filter(Stock.quantity > 0)
-        .filter(Booking.stock == None)
-        .filter(Stock.isExpired == False)
-        .filter(Favorite.userId == user.id)
-        .filter(Favorite.extra.data["notification"] == None)
+        .filter(sqlalchemy.not_(Stock.isExpired))
+        .filter(Booking.id.is_(None))
+        .yield_per(1_000)
     )
+
+
+@dataclass
+class SubcategoryCount:
+    user_id: int
+    subcategory: str
+    count: int
+
+
+def get_subcategories_count_per_user(
+    user_ids: typing.Iterable[int], subcategory_ids: typing.Iterable[str]
+) -> list[SubcategoryCount]:
+    """
+    For a subset of users and subcategories (offers), compute the number
+    of booking each user has made for each category.
+    """
+    rows = (
+        Booking.query.join(Stock)
+        .join(Offer)
+        .group_by(Booking.userId, Offer.subcategoryId)
+        .filter(Booking.userId.in_(user_ids))
+        .filter(Offer.subcategoryId.in_(subcategory_ids))
+        .with_entities(Booking.userId, Offer.subcategoryId, func.count(Offer.subcategoryId))
+    )
+
+    return [SubcategoryCount(user_id=row[0], subcategory=row[1], count=row[2]) for row in rows]
