@@ -25,6 +25,7 @@ import pcapi.core.subscription.exceptions as subscription_exceptions
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
 
 
@@ -163,6 +164,13 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         else:
             template = self.details_template
 
+        has_dms_fraud_check = fraud_models.FraudCheckType.DMS in [
+            fraud_check.type for fraud_check in user.beneficiaryFraudChecks
+        ]
+        has_dms_beneficiary_import = BeneficiaryImportSources.demarches_simplifiees.value in [
+            beneficiary_import.source for beneficiary_import in user.beneficiaryImports
+        ]
+
         return self.render(
             template,
             model=user,
@@ -173,6 +181,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             enum_update_request_value=users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
             subscription_items=support_api.get_subscription_items_by_eligibility(user),
             next_subscription_step=subscription_api.get_next_subscription_step(user),
+            display_beneficiary_imports=has_dms_beneficiary_import and not has_dms_fraud_check,
         )
 
     @flask_admin.expose(
