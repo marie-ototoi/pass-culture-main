@@ -2,7 +2,7 @@ name: Add annotated tag
 on:
   push:
     branches:
-      - master
+      - BSR-set-release-version-in-jira-issues-on-master-merge
 jobs:
   add-annotated-tag:
     runs-on: ubuntu-latest
@@ -37,16 +37,22 @@ jobs:
         uses: atlassian/gajira-find-issue-key@master
         with:
           from: commits
-
-      - name: Push to jira issue
-        run: |
-          curl --request PUT \
-            --url 'https://passculture.atlassian.net/rest/api/2/issue/${{ steps.get_jira_key.outputs.issue }}' \
-            --user '${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}' \
-            --header 'Accept: application/json' \
-            --header 'Content-Type: application/json' \
-            --data '{
-              "fields": {
-                "customfield_10042": ${{ steps.get_release_version.outputs.value }}
-              }
-            }'
+      - name: Setup gajira cli
+        uses: atlassian/gajira-cli@master
+        with:
+          version: 1.0.20
+      - name: Push jira issue
+        run: jira edit --issue=${{ steps.get_jira_key.outputs.issue }} --noedit --override customfield_10042="${{ steps.get_release_version.outputs.value }}"
+      # - name: Push to jira issue
+      #   uses: atlassian/gajira-find-issue-key@master
+      #   run: |
+      #     curl --request PUT \
+      #       --url 'https://passculture.atlassian.net/rest/api/2/issue/${{ steps.get_jira_key.outputs.issue }}' \
+      #       --user '${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}' \
+      #       --header 'Accept: application/json' \
+      #       --header 'Content-Type: application/json' \
+      #       --data '{
+      #         "fields": {
+      #           "customfield_10043": ${{ steps.get_release_version.outputs.value }}
+      #         }
+      #       }'
