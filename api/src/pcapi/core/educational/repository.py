@@ -5,6 +5,7 @@ from typing import Union
 
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import raiseload
 from sqlalchemy.sql.expression import extract
 
 from pcapi.core.bookings.models import Booking
@@ -15,6 +16,7 @@ from pcapi.core.educational.exceptions import EducationalYearNotFound
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.settings import RAISE_LOAD
 
 
 def get_and_lock_educational_deposit(
@@ -108,16 +110,20 @@ def find_educational_bookings_for_adage(
     redactor_email: Optional[str] = None,
     status: Optional[Union[educational_models.EducationalBookingStatus, BookingStatus]] = None,
 ) -> list[educational_models.EducationalBooking]:
+    def raiseload_demo(query):
+        if RAISE_LOAD:
+            query = query.options(raiseload("*"))
+        return query
 
     educational_bookings_base_query = (
         educational_models.EducationalBooking.query.join(educational_models.EducationalBooking.booking)
         .options(
             contains_eager(educational_models.EducationalBooking.booking)
-            .joinedload(Booking.stock, innerjoin=True)
-            .joinedload(Stock.offer, innerjoin=True)
-            .options(
-                joinedload(Offer.venue, innerjoin=True),
-            )
+            # .joinedload(Booking.stock, innerjoin=True)
+            # .joinedload(Stock.offer, innerjoin=True)
+            # .options(
+            #     joinedload(Offer.venue, innerjoin=True),
+            # )
         )
         .join(educational_models.EducationalInstitution)
         .join(educational_models.EducationalRedactor)
@@ -142,6 +148,7 @@ def find_educational_bookings_for_adage(
                 educational_models.EducationalBooking.status == status
             )
 
+    educational_bookings_base_query = raiseload_demo(educational_bookings_base_query)
     return educational_bookings_base_query.all()
 
 
