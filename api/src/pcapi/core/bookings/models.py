@@ -34,6 +34,15 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offers.models import Mediation
 
 
+def lazy(default=None):
+    from pcapi.settings import RAISE_LOAD
+    if RAISE_LOAD:
+        return {'lazy': 'raise'}
+    elif default:
+        return {'lazy': default}
+    else:
+        return {}
+
 class BookingCancellationReasons(enum.Enum):
     OFFERER = "OFFERER"
     BENEFICIARY = "BENEFICIARY"
@@ -88,7 +97,12 @@ class Booking(PcObject, Model):
 
     stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")
+    stock = relationship(
+        "Stock",
+        foreign_keys=[stockId],
+        backref="bookings",
+        **lazy(default=None)
+    )
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 

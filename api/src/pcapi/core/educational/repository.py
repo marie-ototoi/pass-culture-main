@@ -113,11 +113,11 @@ def find_educational_bookings_for_adage(
         educational_models.EducationalBooking.query.join(educational_models.EducationalBooking.booking)
         .options(
             contains_eager(educational_models.EducationalBooking.booking)
-            .joinedload(Booking.stock, innerjoin=True)
-            .joinedload(Stock.offer, innerjoin=True)
-            .options(
-                joinedload(Offer.venue, innerjoin=True),
-            )
+            # .joinedload(Booking.stock, innerjoin=True)
+            # .joinedload(Stock.offer, innerjoin=True)
+            # .options(
+            #     joinedload(Offer.venue, innerjoin=True),
+            # )
         )
         .join(educational_models.EducationalInstitution)
         .join(educational_models.EducationalRedactor)
