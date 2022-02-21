@@ -1,23 +1,28 @@
+from dataclasses import dataclass
+from datetime import datetime
+from datetime import timedelta
 import enum
 import logging
-from dataclasses import dataclass
-from datetime import datetime, timedelta
 from typing import Optional
 
-import pcapi.core.bookings.constants as bookings_constants
 import sqlalchemy as sa
+
+import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import subcategories
-from pcapi.models import Model, db
+from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.offer_mixin import (AccessibilityMixin,
-                                      OfferValidationStatus, StatusMixin,
-                                      ValidationMixin)
+from pcapi.models.offer_mixin import AccessibilityMixin
+from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import StatusMixin
+from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.utils.date import DateTimes
+
 
 logger = logging.getLogger(__name__)
 
