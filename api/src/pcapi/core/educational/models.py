@@ -71,7 +71,7 @@ class EducationalBookingStatus(enum.Enum):
     REFUSED = "REFUSED"
 
 
-class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):
+class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type]
     __tablename__ = "collective_offer"
 
     # add 3 mixin validation, status accessibilite
@@ -124,7 +124,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
                 return False
         return True
 
-    @isSoldOut.expression
+    @isSoldOut.expression  # type: ignore[no-redef]
     def isSoldOut(cls):  # pylint: disable=no-self-argument
         # TODO redefine
         return (
@@ -161,7 +161,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
         return False
 
-    @hasBookingLimitDatetimesPassed.expression
+    @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
         return sa.and_(
             sa.exists().where(CollectiveStock.offerId == cls.id).where(CollectiveStock.isSoftDeleted.is_(False)),
@@ -172,7 +172,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         )
 
 
-class CollectiveStock(PcObject, Model):
+class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "collective_stock"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -202,14 +202,14 @@ class CollectiveStock(PcObject, Model):
     priceDetail = sa.Column(sa.Text, nullable=True)
 
     @property
-    def isBookable(self):
+    def isBookable(self) -> bool:
         return not self.isExpired and self.offer.isReleased and not self.isSoldOut
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimePassed(self):
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
 
-    @hasBookingLimitDatetimePassed.expression
+    @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument  # todo rewrite
         return sa.and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= sa.func.now())
 
@@ -217,7 +217,7 @@ class CollectiveStock(PcObject, Model):
     def remainingQuantity(self):  # todo rewrite
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
-    @remainingQuantity.expression
+    @remainingQuantity.expression  # type: ignore[no-redef]
     def remainingQuantity(cls):  # pylint: disable=no-self-argument  # todo rewrite
         return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
@@ -225,23 +225,23 @@ class CollectiveStock(PcObject, Model):
     def isEventExpired(self):  # todo rewrite
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.utcnow())
 
-    @isEventExpired.expression
+    @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls):  # pylint: disable=no-self-argument  # todo rewrite
         return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
 
     @property
-    def isExpired(self):  # todo rewrite
-        return self.isEventExpired or self.hasBookingLimitDatetimePassed
+    def isExpired(self) -> bool:  # todo rewrite
+        return self.isEventExpired or self.hasBookingLimitDatetimePassed  # type: ignore[return-value]
 
     @property
-    def isEventDeletable(self):  # todo rewrite
+    def isEventDeletable(self) -> bool:  # todo rewrite
         if not self.beginningDatetime:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime
         return limit_date_for_stock_deletion >= datetime.utcnow()
 
     @property
-    def isSoldOut(self):
+    def isSoldOut(self) -> bool:
         # pylint: disable=comparison-with-callable
         if (
             not self.isSoftDeleted
@@ -252,7 +252,7 @@ class CollectiveStock(PcObject, Model):
         return True
 
 
-class EducationalInstitution(PcObject, Model):
+class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_institution"
 
     id: int = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -260,7 +260,7 @@ class EducationalInstitution(PcObject, Model):
     institutionId: str = Column(String(30), nullable=False, unique=True, index=True)
 
 
-class EducationalYear(PcObject, Model):
+class EducationalYear(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_year"
 
     id: int = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -272,7 +272,7 @@ class EducationalYear(PcObject, Model):
     expirationDate: datetime = Column(DateTime, nullable=False)
 
 
-class EducationalDeposit(PcObject, Model):
+class EducationalDeposit(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_deposit"
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
@@ -315,7 +315,7 @@ class EducationalDeposit(PcObject, Model):
         return
 
 
-class EducationalRedactor(PcObject, Model):
+class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type]
 
     __tablename__ = "educational_redactor"
 
@@ -335,7 +335,7 @@ class EducationalRedactor(PcObject, Model):
     )
 
 
-class EducationalBooking(PcObject, Model):
+class EducationalBooking(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_booking"
 
     id: int = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -402,7 +402,7 @@ class EducationalBooking(PcObject, Model):
         self.status = EducationalBookingStatus.REFUSED
 
 
-class CollectiveBooking(PcObject, Model):
+class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -455,11 +455,11 @@ class CollectiveBooking(PcObject, Model):
 
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:  # pylint: disable=using-constant-test
-            raise exceptions.BookingHasAlreadyBeenUsed()
+            raise booking_exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
-            raise exceptions.BookingIsCancelled()
+            raise booking_exceptions.BookingIsCancelled()
         if self.status is BookingStatus.PENDING:
-            raise exceptions.BookingNotConfirmed()
+            raise booking_exceptions.BookingNotConfirmed()
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
 
@@ -467,46 +467,44 @@ class CollectiveBooking(PcObject, Model):
         self.dateUsed = None
         self.status = BookingStatus.CONFIRMED
 
-    def cancel_booking(self, cancel_even_if_used=False) -> None:
+    def cancel_booking(self, cancel_even_if_used: bool = False) -> None:
         if self.status is BookingStatus.CANCELLED:
-            raise exceptions.BookingIsAlreadyCancelled()
+            raise booking_exceptions.BookingIsAlreadyCancelled()
         if self.status is BookingStatus.REIMBURSED:
-            raise exceptions.BookingIsAlreadyUsed()
+            raise booking_exceptions.BookingIsAlreadyUsed()
         if self.status is BookingStatus.USED and not cancel_even_if_used:
-            raise exceptions.BookingIsAlreadyUsed()
+            raise booking_exceptions.BookingIsAlreadyUsed()
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
 
     def uncancel_booking_set_used(self) -> None:
         if not (self.status is BookingStatus.CANCELLED):
-            raise exceptions.BookingIsNotCancelledCannotBeUncancelled()
+            raise booking_exceptions.BookingIsNotCancelledCannotBeUncancelled()
         self.cancellationDate = None
         self.cancellationReason = None
         self.status = BookingStatus.USED
         self.dateUsed = datetime.utcnow()
 
     def mark_as_confirmed(self) -> None:
-        if self.educationalBooking is None:
-            raise exceptions.CannotMarkAsConfirmedIndividualBooking()
-        if self.educationalBooking.has_confirmation_limit_date_passed():
-            raise exceptions.ConfirmationLimitDateHasPassed()
+        if self.has_confirmation_limit_date_passed():
+            raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
         self.status = BookingStatus.CONFIRMED
-        self.educationalBooking.confirmationDate = datetime.utcnow()
+        self.confirmationDate = datetime.utcnow()
 
     @hybrid_property
     def isConfirmed(self):
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
-    @isConfirmed.expression
-    def isConfirmed(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    @isConfirmed.expression  # type: ignore[no-redef]
+    def isConfirmed(cls):  # pylint: disable=no-self-argument
         return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
         return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
 
-    @is_used_or_reimbursed.expression
+    @is_used_or_reimbursed.expression  # type: ignore[no-redef]
     def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
