@@ -1,24 +1,23 @@
-from dataclasses import dataclass
-from datetime import datetime
-from datetime import timedelta
 import enum
 import logging
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import Optional
 
-import sqlalchemy as sa
-
 import pcapi.core.bookings.constants as bookings_constants
+import sqlalchemy as sa
 from pcapi.core.categories import subcategories
-from pcapi.models import Model
-from pcapi.models import db
+from pcapi.models import Model, db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
+from pcapi.models.offer_mixin import (AccessibilityMixin,
+                                      OfferValidationStatus, StatusMixin,
+                                      ValidationMixin)
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.utils.date import DateTimes
-
 
 logger = logging.getLogger(__name__)
 
@@ -229,24 +228,7 @@ class OfferImage:
     credit: Optional[str] = None
 
 
-class OfferStatus(enum.Enum):
-    ACTIVE = "ACTIVE"
-    PENDING = "PENDING"
-    EXPIRED = "EXPIRED"
-    REJECTED = "REJECTED"
-    SOLD_OUT = "SOLD_OUT"
-    INACTIVE = "INACTIVE"
-    DRAFT = "DRAFT"
-
-
-class OfferValidationStatus(enum.Enum):
-    APPROVED = "APPROVED"
-    DRAFT = "DRAFT"
-    PENDING = "PENDING"
-    REJECTED = "REJECTED"
-
-
-class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin):
+class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):
     __tablename__ = "offer"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -289,26 +271,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin):
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )
 
-    audioDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
-
-    mentalDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
-
-    motorDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
-
-    visualDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
-
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
-
-    lastValidationDate = sa.Column(sa.DateTime, index=True, nullable=True)
-
-    validation = sa.Column(
-        sa.Enum(OfferValidationStatus),
-        nullable=False,
-        default=OfferValidationStatus.APPROVED,
-        # changing the server_default will cost an UPDATE migration on all existing null rows
-        server_default="APPROVED",
-        index=True,
-    )
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
@@ -505,44 +468,6 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin):
     @property
     def is_offline_only(self) -> bool:
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
-
-    @sa.ext.hybrid.hybrid_property
-    def status(self) -> OfferStatus:
-        # pylint: disable=too-many-return-statements
-        if self.validation == OfferValidationStatus.REJECTED:
-            return OfferStatus.REJECTED
-
-        if self.validation == OfferValidationStatus.PENDING:
-            return OfferStatus.PENDING
-
-        if self.validation == OfferValidationStatus.DRAFT:
-            return OfferStatus.DRAFT
-
-        if not self.isActive:
-            return OfferStatus.INACTIVE
-
-        if self.validation == OfferValidationStatus.APPROVED:
-            if self.hasBookingLimitDatetimesPassed:  # pylint: disable=using-constant-test
-                return OfferStatus.EXPIRED
-
-            if self.isSoldOut:  # pylint: disable=using-constant-test
-                return OfferStatus.SOLD_OUT
-
-        return OfferStatus.ACTIVE
-
-    @status.expression
-    def status(cls):  # pylint: disable=no-self-argument
-        return sa.case(
-            [
-                (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
-                (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
-                (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
-                (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
-                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
-                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
-            ],
-            else_=OfferStatus.ACTIVE.name,
-        )
 
     @property
     def max_price(self) -> float:
