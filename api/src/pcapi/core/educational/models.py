@@ -76,9 +76,9 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     # add 3 mixin validation, status accessibilite
 
-    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(BigInteger, primary_key=True, autoincrement=True)
 
-    isActive = Column(Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+    isActive = sa.Column(Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
@@ -183,7 +183,9 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
 
     dateModified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
+    beginningDatetime = sa.Column(
+        sa.DateTime, index=True, nullable=False
+    )  #  TODO 4 cas a ratrapper avec un beginDatetime NULL
 
     collectiveOfferId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
@@ -195,7 +197,7 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
 
-    bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
+    bookingLimitDatetime = sa.Column(sa.DateTime, nullable=False)
 
     numberOfTickets = sa.Column(sa.Integer, nullable=True)
 
@@ -210,7 +212,7 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument  # todo rewrite
+    def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
         return sa.and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= sa.func.now())
 
     @sa.ext.hybrid.hybrid_property
@@ -218,7 +220,7 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
     @remainingQuantity.expression  # type: ignore[no-redef]
-    def remainingQuantity(cls):  # pylint: disable=no-self-argument  # todo rewrite
+    def remainingQuantity(cls):  # pylint: disable=no-self-argument
         return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
     @sa.ext.hybrid.hybrid_property
@@ -226,7 +228,7 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.utcnow())
 
     @isEventExpired.expression  # type: ignore[no-redef]
-    def isEventExpired(cls):  # pylint: disable=no-self-argument  # todo rewrite
+    def isEventExpired(cls):  # pylint: disable=no-self-argument
         return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
 
     @property
