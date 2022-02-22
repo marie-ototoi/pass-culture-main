@@ -187,7 +187,7 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
         sa.DateTime, index=True, nullable=False
     )  #  TODO 4 cas a ratrapper avec un beginDatetime NULL
 
-    collectiveOfferId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
+    collectiveOfferId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False)
 
     collectiveOffer = sa.orm.relationship(
         "CollectiveOffer", foreign_keys=[collectiveOfferId], back_populates="collectiveStocks"
@@ -412,17 +412,17 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     dateUsed = Column(DateTime, nullable=True, index=True)
 
-    stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
+    collectiveStockId = Column(BigInteger, ForeignKey("collective_stock.id"), index=True, nullable=False)
 
-    stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")
+    collectiveStock = relationship("CollectiveStock", foreign_keys=[collectiveStockId], backref="collectiveBookings")
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId], backref="bookings")
+    venue = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
 
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref="bookings")
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
 
     cancellationDate = Column(DateTime, nullable=True)
 
@@ -438,13 +438,13 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
     )
 
     status = Column("status", Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
-    Index("ix_booking_status", status)
+    Index("ix_collective_booking_status", status)
 
     reimbursementDate = Column(DateTime, nullable=True)
 
     educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), nullable=False)
     educationalInstitution: EducationalInstitution = relationship(
-        EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="educationalBookings"
+        EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
     )
 
     educationalYearId = Column(String(30), ForeignKey("educational_year.adageId"), nullable=False)
