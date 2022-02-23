@@ -74,16 +74,6 @@ def synchronize_provider_api() -> None:
     provider_api_stocks.synchronize_stocks()
 
 
-# FIXME (asaunier, 2021-05-25): This clock must be removed once every application from procedure
-#  defined in DMS_NEW_ENROLLMENT_PROCEDURE_ID has been treated
-@cron_context
-@log_cron_with_transaction
-def pc_import_dms_users_beneficiaries() -> None:
-    procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
-    dms_api.import_dms_users(procedure_id)
-    archive_dms_applications.archive_applications(procedure_id, dry_run=False)
-
-
 # FIXME (xordoquy, 2021-06-16): This clock must be removed once every application from procedure
 #  defined in 44623 has been treated
 @cron_context
@@ -92,14 +82,6 @@ def pc_import_dms_users_beneficiaries_from_old_dms() -> None:
     if not settings.IS_PROD:
         return
     procedure_id = 44623
-    dms_api.import_dms_users(procedure_id)
-    archive_dms_applications.archive_applications(procedure_id, dry_run=False)
-
-
-@cron_context
-@log_cron_with_transaction
-def pc_import_beneficiaries_from_dms_v3() -> None:
-    procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
     dms_api.import_dms_users(procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
@@ -266,11 +248,7 @@ def clock() -> None:
 
     scheduler.add_job(synchronize_provider_api, "cron", day="*", hour="1")
 
-    scheduler.add_job(pc_import_dms_users_beneficiaries, "cron", day="*", hour="21", minute="50")
-
     scheduler.add_job(pc_import_dms_users_beneficiaries_from_old_dms, "cron", day="*", hour="20", minute="50")
-
-    scheduler.add_job(pc_import_beneficiaries_from_dms_v3, "cron", day="*", hour="6")
 
     scheduler.add_job(pc_import_beneficiaries_from_dms_v4, "cron", day="*", hour="6", minute="20")
 
