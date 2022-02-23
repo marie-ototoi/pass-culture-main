@@ -88,10 +88,10 @@ def pc_import_dms_users_beneficiaries_from_old_dms() -> None:
 
 @cron_context
 @log_cron_with_transaction
-def pc_import_beneficiaries_from_dms_v4() -> None:
+def pc_import_beneficiaries_from_dms() -> None:
     for procedure_name, procedure_id in (
-        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
-        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
+        ("FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_FR),
+        ("ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_ET),
     ):
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
@@ -250,7 +250,7 @@ def clock() -> None:
 
     scheduler.add_job(pc_import_dms_users_beneficiaries_from_old_dms, "cron", day="*", hour="20", minute="50")
 
-    scheduler.add_job(pc_import_beneficiaries_from_dms_v4, "cron", day="*", hour="6", minute="20")
+    scheduler.add_job(pc_import_beneficiaries_from_dms, "cron", day="*", hour="6", minute="20")
 
     scheduler.add_job(update_booking_used, "cron", day="*", hour="0")
 
