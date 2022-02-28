@@ -3,7 +3,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 on:
   push:
     branches:
-      - master
+      - bsr-fix-actions-settings-issues-as-not-deployable
 jobs:
   add-annotated-tag:
     runs-on: ubuntu-latest
