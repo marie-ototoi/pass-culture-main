@@ -1,6 +1,5 @@
 import React, { useCallback, useState, ReactNode } from 'react'
-import { Redirect, useHistory } from 'react-router'
-import { Prompt } from 'react-router-dom'
+import { Navigate, useBlocker, useNavigate } from 'react-router'
 
 import DialogBox from 'new_components/DialogBox/DialogBox'
 import { Button } from 'ui-kit'
@@ -32,12 +31,7 @@ const RouteLeavingGuard = ({
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [lastLocation, setLastLocation] = useState('')
   const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
-  const history = useHistory()
-
-  const closeModal = useCallback(() => {
-    setIsModalVisible(false)
-  }, [])
-
+  const navigate = useNavigate()
   const handleBlockedNavigation = useCallback(
     nextLocation => {
       const { redirectPath, shouldBlock } = shouldBlockNavigation(nextLocation)
@@ -47,7 +41,7 @@ const RouteLeavingGuard = ({
         return false
       }
       if (redirectPath) {
-        history.push({ pathname: redirectPath })
+        navigate(redirectPath)
         return false
       }
 
@@ -55,17 +49,19 @@ const RouteLeavingGuard = ({
     },
     [isConfirmedNavigation, history, shouldBlockNavigation]
   )
-
+  useBlocker(handleBlockedNavigation, when)
+  const closeModal = useCallback(() => {
+    setIsModalVisible(false)
+  }, [])
   const handleConfirmNavigationClick = useCallback(() => {
     setIsModalVisible(false)
     setIsConfirmedNavigation(true)
   }, [])
 
   return isConfirmedNavigation && lastLocation ? (
-    <Redirect push to={lastLocation} />
+    <Navigate to={lastLocation} />
   ) : (
     <>
-      <Prompt message={handleBlockedNavigation} when={when} />
       {isModalVisible && (
         <DialogBox
           extraClassNames={extraClassNames}
