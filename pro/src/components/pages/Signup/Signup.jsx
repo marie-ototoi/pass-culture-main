@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -31,13 +31,13 @@ const Signup = ({ location }) => {
         <Logo noLink signPage />
       </div>
       {isProAccountCreationEnabled ? (
-        <Switch location={location}>
+        <Routes location={location}>
           <Route component={SignupFormContainer} exact path="/inscription" />
           <Route
             component={SignupConfirmationContainer}
             path="/inscription/confirmation"
           />
-        </Switch>
+        </Routes>
       ) : (
         <SignupUnavailable />
       )}

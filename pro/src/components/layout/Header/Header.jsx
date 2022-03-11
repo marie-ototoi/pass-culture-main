@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
-import { NavLink, useHistory } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { reinitializeData } from 'redux-saga-data'
 
 import { signout } from 'repository/pcapi/pcapi'
@@ -19,15 +19,15 @@ import { ReactComponent as StyleguideSvg } from './assets/styleguide.svg'
 
 const Header = ({ isStyleguideActive, isUserAdmin }) => {
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const onSignoutClick = useCallback(() => {
     signout().then(() => {
       dispatch(resetIsInitialized())
       dispatch(reinitializeData())
-      history.push('/connexion')
+      navigate('/connexion')
     })
-  }, [dispatch, history])
+  }, [dispatch, navigate])
 
   return (
     <header className="menu-v2">

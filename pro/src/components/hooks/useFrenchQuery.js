@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { useHistory, useLocation } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 
 import {
   translateApiParamsToQueryParams,
@@ -8,7 +8,7 @@ import {
 
 const useFrenchQuery = () => {
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const frenchQueryParams = useMemo(
     () => Object.fromEntries(new URLSearchParams(location.search)),
@@ -27,9 +27,9 @@ const useFrenchQuery = () => {
       const frenchQueryString = new URLSearchParams(
         frenchQueryParams
       ).toString()
-      history.push(`${location.pathname}?${frenchQueryString}`)
+      navigate(`${location.pathname}?${frenchQueryString}`)
     },
-    [history, location.pathname]
+    [navigate, location.pathname]
   )
 
   return [englishQueryParams, setQuery]

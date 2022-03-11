@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useHistory, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { OFFER_TYPES } from 'core/Offers'
@@ -14,19 +14,19 @@ import OfferTypeButton from './OfferTypeButton'
 const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OFFER_TYPES
 
 const OfferType = (): JSX.Element => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
   const [offerType, setOfferType] = useState(INDIVIDUAL_OR_DUO)
 
   const getNextPageHref = () => {
     if (offerType === INDIVIDUAL_OR_DUO) {
-      return history.push({
+      return navigate({
         pathname: '/offre/creation/individuel',
         search: location.search,
       })
     }
 
-    return history.push({
+    return navigate({
       pathname: '/offre/creation/collectif',
       search: location.search,
     })

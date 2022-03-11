@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import { useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
@@ -25,7 +25,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleSubmitStock = async (
     offer: GetStockOfferSuccessPayload,
@@ -53,7 +53,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     if (!isOk) {
       return notify.error(message)
     }
-    history.push(`/offre/${offer.id}/collectif/confirmation`)
+    navigate(`/offre/${offer.id}/collectif/confirmation`)
   }
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import Icon from 'components/layout/Icon'
@@ -34,7 +34,7 @@ import useQuerySearchFilters from './useQuerySearchFilters'
 
 const Offers = ({ currentUser, getOfferer }) => {
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
 
   useEffect(() => {
@@ -89,9 +89,9 @@ const Offers = ({ currentUser, getOfferer }) => {
       setIsRefreshingOffers(isRefreshing)
       const newUrl = computeOffersUrl(filters, filters.page)
 
-      history.push(newUrl)
+      navigate(newUrl)
     },
-    [history]
+    [navigate]
   )
 
   useEffect(() => {

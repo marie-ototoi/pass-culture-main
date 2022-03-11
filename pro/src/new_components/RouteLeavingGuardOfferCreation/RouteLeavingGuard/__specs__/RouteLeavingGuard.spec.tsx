@@ -3,7 +3,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import type { History } from 'history'
 import React from 'react'
-import { Route, Router, Switch } from 'react-router'
+import { Route, Router, Routes } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import RouteLeavingGuard, {
@@ -15,7 +15,7 @@ const MiniAppTest = () => (
     <Link to="/">Home</Link>
     <Link to="/about">About</Link>
     <Link to="/contact">Contact</Link>
-    <Switch>
+    <Routes>
       <Route exact path="/">
         <div>Home page</div>
       </Route>
@@ -25,7 +25,7 @@ const MiniAppTest = () => (
       <Route path="/contact">
         <div>Contact page</div>
       </Route>
-    </Switch>
+    </Routes>
   </div>
 )
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
-import { Redirect } from 'react-router'
+import { Navigate } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import useOfferEditionURL from 'components/hooks/useOfferEditionURL'
@@ -19,7 +19,7 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
 
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   if (!isCreatingOffer && !isPendingOffer) {
-    return <Redirect to={editionUrl} />
+    return <Navigate to={editionUrl} />
   }
 
   let queryString = ''

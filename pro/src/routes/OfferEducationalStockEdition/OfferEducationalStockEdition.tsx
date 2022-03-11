@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
@@ -38,7 +38,7 @@ const getAdapter = (
 }
 
 const OfferEducationalStockEdition = (): JSX.Element => {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
@@ -125,7 +125,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         }
 
         if (!offerResponse.payload.isEducational) {
-          return history.push(`/offre/${offerId}/individuel/stocks`)
+          return navigate(`/offre/${offerId}/individuel/stocks`)
         }
 
         if (!stockResponse.isOk) {
@@ -149,7 +149,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       }
       loadStockAndOffer()
     }
-  }, [offerId, isReady, notify, history])
+  }, [offerId, isReady, notify, navigate])
 
   return (
     <OfferEducationalLayout

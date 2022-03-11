@@ -1,6 +1,6 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+import { Router, Route, Routes, Navigate } from 'react-router'
 
 import AppContainer from 'app/AppContainer'
 import AppLayout from 'app/AppLayout'
@@ -15,15 +15,15 @@ const { store } = configureStore()
 const Root = () => {
   return (
     <Provider store={store}>
-      <BrowserRouter>
+      <Router>
         <NavigationLogger />
         <AppContainer>
-          <Switch>
-            <Redirect
+          <Routes>
+            <Navigate
               from="/offres/:offerId([A-Z0-9]+)/edition"
               to="/offre/:offerId([A-Z0-9]+)/individuel/edition"
             />
-            <Redirect
+            <Navigate
               from="/offre/:offerId([A-Z0-9]+)/scolaire/edition"
               to="/offre/:offerId([A-Z0-9]+)/collectif/edition"
             />
@@ -55,9 +55,9 @@ const Root = () => {
               )
             })}
             <Route component={NotFound} />
-          </Switch>
+          </Routes>
         </AppContainer>
-      </BrowserRouter>
+      </Router>
     </Provider>
   )
 }

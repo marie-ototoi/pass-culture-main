@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useMatch } from 'react-router'
 
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 
@@ -8,10 +8,10 @@ import OffererDetailsLayout from './Offerer/OffererDetailsLayout'
 import OffererCreationContainer from './OffererCreation/OffererCreationContainer'
 
 const OfferersLayout = () => {
-  const match = useRouteMatch()
+  const match = useMatch()
 
   return (
-    <Switch>
+    <Routes>
       <Route exact path={match.path}>
         <OfferersContainer />
       </Route>
@@ -24,7 +24,7 @@ const OfferersLayout = () => {
       <Route>
         <NotFound />
       </Route>
-    </Switch>
+    </Routes>
   )
 }
 

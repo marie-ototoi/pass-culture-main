@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useMatch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import Icon from 'components/layout/Icon'
@@ -59,7 +59,7 @@ const Reimbursements = ({ currentUser }) => {
   const stepName = location.pathname.match(/[a-z]+$/)
   const activeStep = stepName ? mapPathToStep[stepName[0]] : STEP_ID_INVOICES
 
-  const match = useRouteMatch()
+  const match = useMatch()
 
   const loadVenues = useCallback(async () => {
     try {
@@ -144,7 +144,7 @@ const Reimbursements = ({ currentUser }) => {
                 steps={steps}
                 styleType="tab"
               />
-              <Switch>
+              <Routes>
                 <Route exact path={`${match.path}/justificatifs`}>
                   <ReimbursementsInvoices
                     businessUnitsOptions={businessUnitsOptions}
@@ -158,7 +158,7 @@ const Reimbursements = ({ currentUser }) => {
                     venuesOptions={venuesOptions}
                   />
                 </Route>
-              </Switch>
+              </Routes>
             </>
           ) : (
             <ReimbursementsDetails

@@ -1,12 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {
-  Route,
-  Redirect,
-  Switch,
-  useParams,
-  useRouteMatch,
-} from 'react-router-dom'
+import { Navigate, Route, Routes, useParams, useMatch } from 'react-router-dom'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -16,7 +10,7 @@ import Breadcrumb, { mapPathToStep, STEP_ID_INFORMATIONS } from '../Breadcrumb'
 const VenueCreation = ({ isTemporary }) => {
   let { offererId, venueId } = useParams()
 
-  const match = useRouteMatch()
+  const match = useMatch()
   const pageTitle = isTemporary ? 'Créer un lieu temporaire' : 'Créer un lieu'
 
   const stepName = location.pathname.match(/[a-z]+$/)
@@ -35,7 +29,7 @@ const VenueCreation = ({ isTemporary }) => {
         venueId={venueId}
       />
 
-      <Switch>
+      <Routes>
         <Route exact path={`${match.path}/informations`}>
           <p>
             {isTemporary
@@ -47,9 +41,9 @@ const VenueCreation = ({ isTemporary }) => {
           <p>create venue management form</p>
         </Route>
         <Route exact path={match.path}>
-          <Redirect to={`${match.url}/informations`} />
+          <Navigate to={`${match.url}/informations`} />
         </Route>
-      </Switch>
+      </Routes>
     </div>
   )
 }

@@ -41,7 +41,7 @@ const RouteLeavingGuard = ({
         return false
       }
       if (redirectPath) {
-        navigate(redirectPath)
+        navigate({ pathname: redirectPath })
         return false
       }
 

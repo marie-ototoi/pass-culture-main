@@ -1,5 +1,5 @@
 import React from 'react'
-import { Redirect } from 'react-router'
+import { Navigate } from 'react-router'
 import { useLocation } from 'react-router-dom'
 
 import CsvDetailViewContainer from 'components/layout/CsvTable/CsvTableContainer'
@@ -28,7 +28,7 @@ import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const RedirectToConnexionComponent = () => {
   const location = useLocation()
-  return <Redirect to={`/connexion${location.search}`} />
+  return <Navigate to={`/connexion${location.search}`} />
 }
 
 // NOTE: routes are sorted by PATH alphabetical order

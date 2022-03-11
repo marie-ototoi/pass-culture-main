@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useHistory, useLocation } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import { HTTP_STATUS } from 'api/helpers'
@@ -21,7 +21,7 @@ const SignIn = (): JSX.Element => {
   const [passwordValue, setPasswordValue] = useState<string>('')
 
   const { currentUser } = useCurrentUser()
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch()
   const notification = useNotification()
@@ -29,7 +29,7 @@ const SignIn = (): JSX.Element => {
   const isSubmitButtonDisabled = emailValue === '' || passwordValue === ''
 
   useEffect(() => {
-    redirectLoggedUser(history, location, currentUser)
+    redirectLoggedUser(navigate, location, currentUser)
   }, [currentUser]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const accountCreationUrl = isAccountCreationAvailable
@@ -45,7 +45,7 @@ const SignIn = (): JSX.Element => {
   }
 
   const onHandleSuccessRedirect = () => {
-    redirectLoggedUser(history, location, currentUser)
+    redirectLoggedUser(navigate, location, currentUser)
   }
 
   const onHandleFail = (payload: {

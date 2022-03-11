@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  Route,
-  Redirect,
-  Switch,
-  useParams,
-  useRouteMatch,
-} from 'react-router-dom'
+import { Navigate, Route, Routes, useParams, useMatch } from 'react-router-dom'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -15,7 +9,7 @@ import Breadcrumb, { mapPathToStep, STEP_ID_INFORMATIONS } from '../Breadcrumb'
 const VenueEdition = () => {
   let { offererId, venueId } = useParams()
 
-  const match = useRouteMatch()
+  const match = useMatch()
 
   const stepName = location.pathname.match(/[a-z]+$/)
   const activeStep = stepName
@@ -33,7 +27,7 @@ const VenueEdition = () => {
         venueId={venueId}
       />
 
-      <Switch>
+      <Routes>
         <Route path={`${match.path}/informations`}>
           <p>edit venue information form</p>
         </Route>
@@ -42,9 +36,9 @@ const VenueEdition = () => {
         </Route>
 
         <Route exact path={match.path}>
-          <Redirect to={`${match.url}/informations`} />
+          <Navigate to={`${match.url}/informations`} />
         </Route>
-      </Switch>
+      </Routes>
     </div>
   )
 }

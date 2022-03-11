@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import useFrenchQuery from 'components/hooks/useFrenchQuery'
 import { buildSelectOptions } from 'components/layout/inputs/Select'
@@ -29,7 +29,7 @@ const Offerers = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
 
-  const history = useHistory()
+  const navigate = useNavigate()
   const [query, setQuery] = useFrenchQuery()
 
   useEffect(
@@ -93,13 +93,13 @@ const Offerers = () => {
     event => {
       const newOffererId = event.target.value
       if (newOffererId === CREATE_OFFERER_SELECT_ID) {
-        history.push('/structures/creation')
+        navigate('/structures/creation')
       } else if (newOffererId !== selectedOfferer.id) {
         setSelectedOffererId(newOffererId)
         setQuery({ offererId: newOffererId })
       }
     },
-    [history, selectedOfferer, setQuery]
+    [navigate, selectedOfferer, setQuery]
   )
 
   if (isLoading) {

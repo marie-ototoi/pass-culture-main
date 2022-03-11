@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useMatch } from 'react-router-dom'
 
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 
@@ -7,9 +7,9 @@ import VenueCreationContainer from './VenueCreation/VenueCreationContainer'
 import VenueEditionContainer from './VenueEdition/VenueEditionContainer'
 
 const VenueLayout = () => {
-  const match = useRouteMatch()
+  const match = useMatch()
   return (
-    <Switch>
+    <Routes>
       <Route exact path={`${match.path}/creation`}>
         <VenueCreationContainer />
       </Route>
@@ -19,7 +19,7 @@ const VenueLayout = () => {
       <Route>
         <NotFound />
       </Route>
-    </Switch>
+    </Routes>
   )
 }
 

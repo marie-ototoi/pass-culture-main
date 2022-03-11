@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 import { redirectLoggedUser } from 'components/router/helpers'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -49,7 +49,7 @@ class SignupValidation extends PureComponent {
   }
 
   render() {
-    return <Redirect to="/connexion" />
+    return <Navigate to="/connexion" />
   }
 }
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch, useHistory } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 
 import { apiV1 } from 'api/api'
 import Titles from 'components/layout/Titles/Titles'
@@ -33,7 +33,7 @@ const getActiveStepFromLocation = location => {
 }
 
 const OfferLayout = ({ location, match }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [offer, setOffer] = useState(null)
   const [isCreatingOffer, setIsCreatingOffer] = useState(true)
@@ -81,7 +81,7 @@ const OfferLayout = ({ location, match }) => {
     ) : null
 
   if (offer?.isEducational) {
-    history.push(
+    navigate(
       `/offre/${match.params.offerId}/collectif/${
         activeStep === 'stocks' ? 'stocks/edition' : 'edition'
       }`
@@ -100,7 +100,7 @@ const OfferLayout = ({ location, match }) => {
       />
 
       <div className="offer-content">
-        <Switch>
+        <Routes>
           <Route exact path="/offre/creation/individuel">
             {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
             {/* There is a concurrency run between the RouteLeavingGuardOfferCreation and the reloadOffer call */}
@@ -125,7 +125,7 @@ const OfferLayout = ({ location, match }) => {
               setOffer={setOffer}
             />
           </Route>
-        </Switch>
+        </Routes>
       </div>
       <RouteLeavingGuardOfferCreation when={isCreatingOffer} />
     </div>

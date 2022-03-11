@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
@@ -30,7 +30,7 @@ type AsyncScreenProps = Pick<
 
 const OfferEducationalEdition = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
@@ -148,12 +148,12 @@ const OfferEducationalEdition = (): JSX.Element => {
     if (!isReady) {
       getOfferAdapter(offerId).then(offerResponse => {
         if (offerResponse.isOk && !offerResponse.payload.isEducational) {
-          return history.push(`/offre/${offerId}/individuel/edition`)
+          return navigate(`/offre/${offerId}/individuel/edition`)
         }
         loadData(offerResponse)
       })
     }
-  }, [isReady, offerId, loadData, history])
+  }, [isReady, offerId, loadData, navigate])
 
   return (
     <OfferEducationalLayout

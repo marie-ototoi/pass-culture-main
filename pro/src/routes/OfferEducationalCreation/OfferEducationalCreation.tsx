@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
@@ -28,7 +28,7 @@ type AsyncScreenProps = Pick<
 >
 
 const OfferEducationalCreation = (): JSX.Element => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
 
   const [isReady, setIsReady] = useState<boolean>(false)
@@ -48,7 +48,7 @@ const OfferEducationalCreation = (): JSX.Element => {
       return notify.error(message)
     }
 
-    history.push(`/offre/${payload.offerId}/collectif/stocks`)
+    navigate(`/offre/${payload.offerId}/collectif/stocks`)
   }
 
   useEffect(() => {
