@@ -12,7 +12,10 @@ import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
 import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
-import { IImageCropParams } from 'new_components/ImageEditor/ImageEditorNew'
+import {
+  IImageCropParams,
+  OnImageEditorUnmount,
+} from 'new_components/ImageEditor/ImageEditorNew'
 
 interface IVenueImageUploaderModalProps {
   venueId: string
@@ -43,14 +46,15 @@ export const VenueImageUploaderModal = ({
 }: IVenueImageUploaderModalProps): JSX.Element => {
   const [image, setImage] = useState<string | undefined>(defaultImage)
   const [credit, setCredit] = useState(venueCredit)
-  const [croppingRect, setCroppingRect] = useState<IImageCropParams>()
+  const [croppedRect, setCroppedRect] = useState<CroppedRect>({
+    x: 0.5,
+    y: 0.5,
+    width: 1,
+    height: 1,
+  })
   const [editedImage, setEditedImage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const [editorInitialScale, setEditorInitialScale] = useState(1)
-  const [editorInitialPosition, setEditorInitialPosition] = useState({
-    x: 0.5,
-    y: 0.5,
-  })
   const notification = useNotification()
 
   const onSetImage = useCallback(
@@ -60,18 +64,13 @@ export const VenueImageUploaderModal = ({
     [setImage]
   )
 
-  const onEditedImageSave = useCallback(
-    ({
-      cropParams,
-      image,
-    }: {
-      cropParams: IImageCropParams
-      image: string
-    }) => {
-      setCroppingRect(cropParams)
+  const onEditedImageSave = useCallback<OnImageEditorUnmount>(
+    ({ cropParams, image }) => {
+      setCroppedRect(cropParams.croppedRect)
+      setEditorInitialScale(cropParams.scale)
       setEditedImage(image)
     },
-    [setEditedImage, setCroppingRect]
+    [setEditedImage, setCroppedRect]
   )
 
   const navigateFromPreviewToEdit = useCallback(() => {
@@ -83,7 +82,7 @@ export const VenueImageUploaderModal = ({
   }, [setImage])
 
   const onUpload = useCallback(async () => {
-    if (typeof croppingRect === undefined) return
+    if (typeof croppedRect === undefined) return
     if (typeof image === undefined) return
 
     try {
@@ -95,9 +94,9 @@ export const VenueImageUploaderModal = ({
       // const { bannerUrl } = await postImageToVenue({
       //   venueId,
       //   banner: imageDataURL,
-      //   xCropPercent: croppingRect?.x,
-      //   yCropPercent: croppingRect?.y,
-      //   heightCropPercent: croppingRect?.height,
+      //   xCropPercent: croppedRect?.x,
+      //   yCropPercent: croppedRect?.y,
+      //   heightCropPercent: croppedRect?.height,
       //   imageCredit: credit,
       // })
       // onImageUpload({ bannerUrl, credit })
@@ -113,7 +112,7 @@ export const VenueImageUploaderModal = ({
   }, [
     venueId,
     image,
-    croppingRect,
+    croppedRect,
     onDismiss,
     notification,
     credit,
@@ -133,12 +132,14 @@ export const VenueImageUploaderModal = ({
           onSetImage={onSetImage}
           orientation="landscape"
         />
-      ) : !croppingRect || !editedImage ? (
+      ) : !croppedRect || !editedImage ? (
         <VenueImageEdit
           credit={credit}
           image={image}
-          initialPosition={editorInitialPosition}
-          initialScale={editorInitialScale}
+          initialCropParams={{
+            croppedRect,
+            scale: editorInitialScale,
+          }}
           onEditedImageSave={onEditedImageSave}
           onReplaceImage={onReplaceImage}
           onSetCredit={setCredit}

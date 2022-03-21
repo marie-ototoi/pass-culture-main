@@ -2,20 +2,36 @@ import Slider from '@mui/material/Slider'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
 import React, { useEffect, useRef, useCallback, useState } from 'react'
-import AvatarEditor, { Position } from 'react-avatar-editor'
+import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
 import { useEffectUnmount } from 'hooks'
 
 import CanvasTools from './canvas'
 import style from './ImageEditor.module.scss'
 
-const DEFAULT_CROP_BORDER_COLOR = '#fff'
-const DEFAULT_IMAGE_CROP_PARAMS = { position: { x: 0.5, y: 0.5 }, scale: 1 }
-
 export interface IImageCropParams {
-  position: Position
+  croppedRect: CroppedRect
   scale: number
 }
+
+const DEFAULT_CROP_BORDER_COLOR = '#fff'
+const DEFAULT_IMAGE_CROP_PARAMS: IImageCropParams = {
+  croppedRect: {
+    x: 0,
+    y: 0,
+    width: 1,
+    height: 1,
+  },
+  scale: 1,
+}
+
+export type OnImageEditorUnmount = ({
+  cropParams,
+  image,
+}: {
+  cropParams: IImageCropParams
+  image: string
+}) => void
 
 export interface IImageEditorProps {
   image: string | File
@@ -25,15 +41,14 @@ export interface IImageEditorProps {
   cropBorderHeight: number
   cropBorderWidth: number
   initialImageCropParams?: IImageCropParams
-  onUnmount: ({
-    cropParams,
-    image,
-  }: {
-    cropParams: IImageCropParams
-    image: string
-  }) => void
+  onUnmount: OnImageEditorUnmount
   children?: never
 }
+
+// croppingRect give us the top left corner of the cropped area
+// where AvatarEditor expect the center of it
+const coordonateToPosition = (coordonate: number, size: number) =>
+  coordonate + size / 2
 
 const ImageEditor = ({
   image,
@@ -46,7 +61,16 @@ const ImageEditor = ({
   initialImageCropParams = DEFAULT_IMAGE_CROP_PARAMS,
 }: IImageEditorProps): JSX.Element => {
   const [scale, setScale] = useState(initialImageCropParams.scale)
-  const [position, setPosition] = useState(initialImageCropParams.position)
+  const [position, setPosition] = useState({
+    x: coordonateToPosition(
+      initialImageCropParams.croppedRect.x,
+      initialImageCropParams.croppedRect.width
+    ),
+    y: coordonateToPosition(
+      initialImageCropParams.croppedRect.y,
+      initialImageCropParams.croppedRect.height
+    ),
+  })
   const editorRef = useRef<AvatarEditor>(null)
   const theme = createTheme({
     palette: {
@@ -59,20 +83,12 @@ const ImageEditor = ({
   })
 
   // save state in ref to prevents parent re-render to call onUnmount callback only on unmout
-  const positionRef = useRef(position)
   const scaleRef = useRef(scale)
 
   useEffect(() => {
     scaleRef.current = scale
-    console.log("scale: ", scale);
-    
+    console.log('scale: ', scale)
   }, [scale])
-
-  useEffect(() => {
-    positionRef.current = position
-    console.log("position: ", position);
-
-  }, [position])
 
   useEffectUnmount(() => {
     console.log('on appelle la callback')
@@ -81,8 +97,8 @@ const ImageEditor = ({
     const canvas = editorRef.current.getImage()
     const image = canvas.toDataURL()
 
-    const croppingRect = editorRef.current.getCroppingRect()
-    console.log('croppingRect: ', croppingRect)
+    const croppedRect = editorRef.current.getCroppingRect()
+    console.log('croppingRect: ', croppedRect)
     // croppingRect give us the top left corner of the cropped area
     // where AvatarEditor expect the center of it
     // const coordonateToPosition = (coordonate: number, size: number) =>
@@ -92,7 +108,7 @@ const ImageEditor = ({
     //   y: coordonateToPosition(croppingRect.y, croppingRect.height),
     // }
     onUnmount({
-      cropParams: { scale: scaleRef.current, position: positionRef.current },
+      cropParams: { scale: scaleRef.current, croppedRect },
       image,
     })
   }, [onUnmount])

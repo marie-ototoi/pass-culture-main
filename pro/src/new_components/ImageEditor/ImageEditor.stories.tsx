@@ -11,7 +11,7 @@ export default {
 
 const Template: Story<IImageEditorProps> = props => (
   <>
-    <ImageEditor {...props} ref={null} />
+    <ImageEditor {...props} />
     <h1>
       Ne pas cliquer sur l'onglet "DOCS" de ce storybook, car il ne fonctionne
       pas.
@@ -38,9 +38,11 @@ WithInitialScale.args = {
   cropBorderWidth: 40,
   image: sampleImage,
   initialImageCropParams: {
-    position: {
-      x: 0.5,
-      y: 0.5,
+    croppedRect: {
+      x: 0.25,
+      y: 0.3716700819672131,
+      width: 0.5,
+      height: 0.2566598360655738,
     },
     scale: 1.5,
   },
@@ -55,9 +57,11 @@ WithInitialPosition.args = {
   cropBorderWidth: 40,
   image: sampleImage,
   initialImageCropParams: {
-    position: {
+    croppedRect: {
       x: 0,
       y: 0,
+      width: 0.5,
+      height: 0.2566598360655738,
     },
     scale: 1.5,
   },
