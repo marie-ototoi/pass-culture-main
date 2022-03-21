@@ -4,7 +4,9 @@ import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 import useNotification from 'components/hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
-import ImageEditor from 'new_components/ImageEditor/ImageEditor'
+import ImageEditor, {
+  IImageCropParams,
+} from 'new_components/ImageEditor/ImageEditorNew'
 import { Button, Divider } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -22,11 +24,15 @@ interface IVenueImageEditProps {
   onSetCredit: (credit: string) => void
   children?: never
   onReplaceImage: () => void
-  initialPosition?: Position
-  initialScale?: number
-  saveInitialScale: (scale: number) => void
-  saveInitialPosition: (position: Position) => void
-  onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
+  initialPosition: Position
+  initialScale: number
+  onEditedImageSave: ({
+    cropParams,
+    image,
+  }: {
+    cropParams: IImageCropParams
+    image: string
+  }) => void
 }
 
 export const VenueImageEdit = ({
@@ -35,8 +41,6 @@ export const VenueImageEdit = ({
   credit,
   onSetCredit,
   onEditedImageSave,
-  saveInitialScale,
-  saveInitialPosition,
   initialPosition,
   initialScale,
 }: IVenueImageEditProps): JSX.Element => {
@@ -45,32 +49,12 @@ export const VenueImageEdit = ({
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      handleNext()
+      // handleNext()
     }
   }
 
-  const handleNext = useCallback(() => {
-    try {
-      if (editorRef.current) {
-        const canvas = editorRef.current.getImage()
-        const croppingRect = editorRef.current.getCroppingRect()
-
-        // croppingRect give us the top left corner of the cropped area
-        // where AvatarEditor expect the center of it
-        const coordonateToPosition = (coordonate: number, size: number) =>
-          coordonate + size / 2
-        saveInitialPosition({
-          x: coordonateToPosition(croppingRect.x, croppingRect.width),
-          y: coordonateToPosition(croppingRect.y, croppingRect.height),
-        })
-        onEditedImageSave(canvas.toDataURL(), croppingRect)
-      }
-    } catch {
-      notification.error(
-        'Une erreur est survenue. Merci de réessayer plus tard'
-      )
-    }
-  }, [onEditedImageSave, saveInitialPosition, notification])
+  // notification.error(
+  //   'Une erreur est survenue. Merci de réessayer plus tard'
 
   return (
     <section className={style['venue-image-edit']}>
@@ -90,10 +74,11 @@ export const VenueImageEdit = ({
           cropBorderHeight={CROP_BORDER_HEIGHT}
           cropBorderWidth={CROP_BORDER_WIDTH}
           image={image}
-          initialPosition={initialPosition}
-          initialScale={initialScale}
-          ref={editorRef}
-          saveInitialScale={saveInitialScale}
+          initialImageCropParams={{
+            position: initialPosition,
+            scale: initialScale,
+          }}
+          onUnmount={onEditedImageSave}
         />
         <CreditInput
           credit={credit}
@@ -111,7 +96,7 @@ export const VenueImageEdit = ({
         >
           Remplacer l'image
         </Button>
-        <Button onClick={handleNext}>Suivant</Button>
+        <Button>Suivant</Button>
       </footer>
     </section>
   )

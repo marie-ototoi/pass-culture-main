@@ -12,6 +12,7 @@ import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
 import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
+import { IImageCropParams } from 'new_components/ImageEditor/ImageEditorNew'
 
 interface IVenueImageUploaderModalProps {
   venueId: string
@@ -42,7 +43,7 @@ export const VenueImageUploaderModal = ({
 }: IVenueImageUploaderModalProps): JSX.Element => {
   const [image, setImage] = useState<string | undefined>(defaultImage)
   const [credit, setCredit] = useState(venueCredit)
-  const [croppingRect, setCroppingRect] = useState<CroppedRect>()
+  const [croppingRect, setCroppingRect] = useState<IImageCropParams>()
   const [editedImage, setEditedImage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const [editorInitialScale, setEditorInitialScale] = useState(1)
@@ -60,9 +61,15 @@ export const VenueImageUploaderModal = ({
   )
 
   const onEditedImageSave = useCallback(
-    (dataUrl, croppedRect) => {
-      setCroppingRect(croppedRect)
-      setEditedImage(dataUrl)
+    ({
+      cropParams,
+      image,
+    }: {
+      cropParams: IImageCropParams
+      image: string
+    }) => {
+      setCroppingRect(cropParams)
+      setEditedImage(image)
     },
     [setEditedImage, setCroppingRect]
   )
@@ -85,15 +92,15 @@ export const VenueImageUploaderModal = ({
       // so we need to retrieve it if we only have the URL
       const imageDataURL =
         typeof image === 'string' ? await getDataURLFromImageURL(image) : image
-      const { bannerUrl } = await postImageToVenue({
-        venueId,
-        banner: imageDataURL,
-        xCropPercent: croppingRect?.x,
-        yCropPercent: croppingRect?.y,
-        heightCropPercent: croppingRect?.height,
-        imageCredit: credit,
-      })
-      onImageUpload({ bannerUrl, credit })
+      // const { bannerUrl } = await postImageToVenue({
+      //   venueId,
+      //   banner: imageDataURL,
+      //   xCropPercent: croppingRect?.x,
+      //   yCropPercent: croppingRect?.y,
+      //   heightCropPercent: croppingRect?.height,
+      //   imageCredit: credit,
+      // })
+      // onImageUpload({ bannerUrl, credit })
       setIsUploading(false)
       onDismiss()
       notification.success('Vos modifications ont bien été prises en compte')
@@ -135,8 +142,8 @@ export const VenueImageUploaderModal = ({
           onEditedImageSave={onEditedImageSave}
           onReplaceImage={onReplaceImage}
           onSetCredit={setCredit}
-          saveInitialPosition={setEditorInitialPosition}
-          saveInitialScale={setEditorInitialScale}
+          // saveInitialPosition={setEditorInitialPosition}
+          // saveInitialScale={setEditorInitialScale}
         />
       ) : (
         <VenueImagePreview

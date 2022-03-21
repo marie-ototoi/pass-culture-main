@@ -1,7 +1,7 @@
 import { Story } from '@storybook/react'
 import React from 'react'
 
-import ImageEditor, { IImageEditorProps } from './ImageEditor'
+import ImageEditor, { IImageEditorProps } from './ImageEditorNew'
 import sampleImage from './sample-image.jpg'
 
 export default {
@@ -37,5 +37,28 @@ WithInitialScale.args = {
   cropBorderHeight: 30,
   cropBorderWidth: 40,
   image: sampleImage,
-  initialScale: 1.5,
+  initialImageCropParams: {
+    position: {
+      x: 0.5,
+      y: 0.5,
+    },
+    scale: 1.5,
+  },
+}
+
+export const WithInitialPosition = Template.bind({})
+WithInitialPosition.args = {
+  canvasHeight: 300,
+  canvasWidth: 400,
+  cropBorderColor: '#FFF',
+  cropBorderHeight: 30,
+  cropBorderWidth: 40,
+  image: sampleImage,
+  initialImageCropParams: {
+    position: {
+      x: 0,
+      y: 0,
+    },
+    scale: 1.5,
+  },
 }

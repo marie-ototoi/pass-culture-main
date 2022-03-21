@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 
-const useEffectUnmount = (callback: () => void): void => {
+const useEffectUnmount = (callback: () => void, deps: unknown[] = []): void => {
   useEffect(
     () => () => callback(),
-    [] // eslint-disable-line react-hooks/exhaustive-deps
+    deps // eslint-disable-line react-hooks/exhaustive-deps
   )
 }
 
