@@ -1,7 +1,7 @@
 import { Story } from '@storybook/react'
 import React from 'react'
 
-import ImageEditor, { IImageEditorProps } from './ImageEditorNew'
+import { ImageEditor, IImageEditorProps } from './ImageEditorNew'
 import sampleImage from './sample-image.jpg'
 
 export default {

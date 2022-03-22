@@ -65,10 +65,10 @@ export const VenueImageUploaderModal = ({
   )
 
   const onEditedImageSave = useCallback<OnImageEditorUnmount>(
-    ({ cropParams, image }) => {
+    ({ cropParams, getImageCallback }) => {
       setCroppedRect(cropParams.croppedRect)
       setEditorInitialScale(cropParams.scale)
-      setEditedImage(image)
+      setEditedImage(getImageCallback())
     },
     [setEditedImage, setCroppedRect]
   )
@@ -91,15 +91,15 @@ export const VenueImageUploaderModal = ({
       // so we need to retrieve it if we only have the URL
       const imageDataURL =
         typeof image === 'string' ? await getDataURLFromImageURL(image) : image
-      // const { bannerUrl } = await postImageToVenue({
-      //   venueId,
-      //   banner: imageDataURL,
-      //   xCropPercent: croppedRect?.x,
-      //   yCropPercent: croppedRect?.y,
-      //   heightCropPercent: croppedRect?.height,
-      //   imageCredit: credit,
-      // })
-      // onImageUpload({ bannerUrl, credit })
+      const { bannerUrl } = await postImageToVenue({
+        venueId,
+        banner: imageDataURL,
+        xCropPercent: croppedRect?.x,
+        yCropPercent: croppedRect?.y,
+        heightCropPercent: croppedRect?.height,
+        imageCredit: credit,
+      })
+      onImageUpload({ bannerUrl, credit })
       setIsUploading(false)
       onDismiss()
       notification.success('Vos modifications ont bien été prises en compte')
@@ -158,3 +158,4 @@ export const VenueImageUploaderModal = ({
     </DialogBox>
   )
 }
+VenueImageUploaderModal.whyDidYouRender = true

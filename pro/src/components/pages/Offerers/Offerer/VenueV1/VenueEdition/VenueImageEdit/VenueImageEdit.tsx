@@ -1,10 +1,11 @@
 import React, { useCallback, useRef, useState } from 'react'
-import AvatarEditor from 'react-avatar-editor'
+import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
 import useNotification from 'components/hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
-import ImageEditor, {
+import {
+  ImageEditor,
   IImageCropParams,
   OnImageEditorUnmount,
 } from 'new_components/ImageEditor/ImageEditorNew'
@@ -40,13 +41,38 @@ export const VenueImageEdit = ({
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
 
-  const [displayEditor, setDisplayEditor] = useState(true)
+  const [croppedRect, setCroppedRect] = useState<CroppedRect>(
+    initialCropParams.croppedRect
+  )
+  const [editorInitialScale, setEditorInitialScale] = useState(
+    initialCropParams.scale
+  )
+  const [editedImage, setEditedImage] = useState('')
+
+  const handleNext = useCallback(() => {
+    onEditedImageSave({
+      cropParams: {
+        croppedRect,
+        scale: editorInitialScale,
+      },
+      getImageCallback() {
+        return editedImage
+      },
+    })
+  }, [croppedRect, editedImage, editorInitialScale, onEditedImageSave])
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      // handleNext()
+      handleNext()
+      event.preventDefault()
     }
   }
+
+  const merde = useCallback(({ cropParams, getImageCallback }) => {
+    setCroppedRect(cropParams.croppedRect)
+    setEditorInitialScale(cropParams.scale)
+    setEditedImage(getImageCallback())
+  }, [])
 
   // notification.error(
   //   'Une erreur est survenue. Merci de réessayer plus tard'
@@ -62,18 +88,16 @@ export const VenueImageEdit = ({
           je dispose des autorisations nécessaires pour l’utilisation de
           celui-ci.
         </p>
-        {displayEditor && (
-          <ImageEditor
-            canvasHeight={CANVAS_HEIGHT}
-            canvasWidth={CANVAS_WIDTH}
-            cropBorderColor={CROP_BORDER_COLOR}
-            cropBorderHeight={CROP_BORDER_HEIGHT}
-            cropBorderWidth={CROP_BORDER_WIDTH}
-            image={image}
-            initialImageCropParams={initialCropParams}
-            onUnmount={onEditedImageSave}
-          />
-        )}
+        <ImageEditor
+          canvasHeight={CANVAS_HEIGHT}
+          canvasWidth={CANVAS_WIDTH}
+          cropBorderColor={CROP_BORDER_COLOR}
+          cropBorderHeight={CROP_BORDER_HEIGHT}
+          cropBorderWidth={CROP_BORDER_WIDTH}
+          image={image}
+          initialImageCropParams={initialCropParams}
+          onUnmount={merde}
+        />
         <CreditInput
           credit={credit}
           extraClassName={style['venue-image-edit-credit']}
@@ -90,14 +114,10 @@ export const VenueImageEdit = ({
         >
           Remplacer l'image
         </Button>
-        <Button
-          onClick={() => {
-            setDisplayEditor(false)
-          }}
-        >
-          Suivant
-        </Button>
+        <Button onClick={handleNext}>Suivant</Button>
       </footer>
     </section>
   )
 }
+
+VenueImageEdit.whyDidYouRender = true

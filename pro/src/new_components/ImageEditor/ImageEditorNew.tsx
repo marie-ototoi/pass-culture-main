@@ -8,6 +8,8 @@ import { useEffectUnmount } from 'hooks'
 
 import CanvasTools from './canvas'
 import style from './ImageEditor.module.scss'
+import isEqual from 'lodash.isequal'
+import { omit } from 'lodash'
 
 export interface IImageCropParams {
   croppedRect: CroppedRect
@@ -27,10 +29,10 @@ const DEFAULT_IMAGE_CROP_PARAMS: IImageCropParams = {
 
 export type OnImageEditorUnmount = ({
   cropParams,
-  image,
+  getImageCallback,
 }: {
   cropParams: IImageCropParams
-  image: string
+  getImageCallback: () => string
 }) => void
 
 export interface IImageEditorProps {
@@ -50,7 +52,7 @@ export interface IImageEditorProps {
 const coordonateToPosition = (coordonate: number, size: number) =>
   coordonate + size / 2
 
-const ImageEditor = ({
+const ImageEditorUnmemorized = ({
   image,
   canvasHeight,
   canvasWidth,
@@ -71,6 +73,7 @@ const ImageEditor = ({
       initialImageCropParams.croppedRect.height
     ),
   })
+  const [imageStatus, setImageStatus] = useState('loading')
   const editorRef = useRef<AvatarEditor>(null)
   const theme = createTheme({
     palette: {
@@ -90,15 +93,20 @@ const ImageEditor = ({
     console.log('scale: ', scale)
   }, [scale])
 
-  useEffectUnmount(() => {
-    console.log('on appelle la callback')
-    if (!editorRef.current) return
+  const getImageCallback = useCallback(() => {
+    if (!editorRef.current) throw new Error('Toto')
 
     const canvas = editorRef.current.getImage()
     const image = canvas.toDataURL()
+    return image
+  }, [])
+
+  useEffect(() => {
+    if (!editorRef.current) return
+
+    if (imageStatus !== 'loaded') return
 
     const croppedRect = editorRef.current.getCroppingRect()
-    console.log('croppingRect: ', croppedRect)
     // croppingRect give us the top left corner of the cropped area
     // where AvatarEditor expect the center of it
     // const coordonateToPosition = (coordonate: number, size: number) =>
@@ -109,9 +117,9 @@ const ImageEditor = ({
     // }
     onUnmount({
       cropParams: { scale: scaleRef.current, croppedRect },
-      image,
+      getImageCallback,
     })
-  }, [onUnmount])
+  }, [scale, position, onUnmount, getImageCallback, imageStatus])
 
   const drawCropBorder = useCallback(() => {
     const canvas = document.querySelector('canvas')
@@ -139,8 +147,8 @@ const ImageEditor = ({
     setScale(event.target.value)
   }, [])
 
-  const onPositionChange = useCallback(position => {
-    setPosition(position)
+  const setImageLoaded = useCallback(() => {
+    setImageStatus('loaded')
   }, [])
 
   return (
@@ -153,9 +161,10 @@ const ImageEditor = ({
         image={image}
         onImageChange={drawCropBorder}
         onImageReady={drawCropBorder}
+        onLoadSuccess={setImageLoaded}
         onMouseMove={drawCropBorder}
         onMouseUp={drawCropBorder}
-        onPositionChange={onPositionChange}
+        onPositionChange={setPosition}
         position={position}
         ref={editorRef}
         scale={Number(scale)}
@@ -188,6 +197,19 @@ const CustomSlider = styled(Slider)(() => ({
     width: 16,
   },
 }))
-ImageEditor.displayName = 'ImageEditor'
 
-export default ImageEditor
+ImageEditorUnmemorized.whyDidYouRender = true
+
+//export default ImageEditorUnmemorized
+export const ImageEditor = React.memo(
+  ImageEditorUnmemorized,
+  (prevProps, nextProps) => {
+    const toto = isEqual(
+      omit(prevProps, ['initialImageCropParams']),
+      omit(nextProps, ['initialImageCropParams'])
+    )
+
+    console.log({ toto })
+    return toto
+  }
+)
