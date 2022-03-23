@@ -8,7 +8,7 @@ import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
 import routes, { routesWithMain } from 'utils/routes_map'
 
-import RedirectToMaintenance from './RedirectToMaintenance'
+import { RedirectToMaintenance } from './RedirectToMaintenance'
 
 export const App = props => {
   const {
