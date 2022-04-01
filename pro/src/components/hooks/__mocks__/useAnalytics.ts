@@ -19,6 +19,7 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logReimbursementClick: jest.fn(),
     logLogoutClick: jest.fn(),
     logProClick: jest.fn(),
+    logDisplayOffererClick: jest.fn(),
   }
 }
 

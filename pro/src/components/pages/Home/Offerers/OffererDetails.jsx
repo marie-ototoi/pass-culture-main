@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import { Banner } from 'ui-kit'
@@ -44,6 +45,7 @@ const OffererDetails = ({
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
+  const analytics = useAnalytics()
 
   const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
     if (!selectedOfferer) return false
@@ -158,6 +160,10 @@ const OffererDetails = ({
           {isUserOffererValidated ? (
             <Link
               className="tertiary-link"
+              onClick={() => {
+                console.log('LOG CLICK')
+                analytics.logDisplayOffererClick
+              }}
               to={`/structures/${selectedOfferer.id}`}
             >
               <Icon svg="ico-outer-pen" />

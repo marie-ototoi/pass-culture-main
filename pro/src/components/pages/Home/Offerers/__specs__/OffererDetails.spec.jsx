@@ -36,6 +36,14 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getBusinessUnits: jest.fn(),
 }))
 
+const mockLogDisplayOffererClick = jest.fn()
+
+jest.mock('components/hooks/useAnalytics', () => {
+  return jest.fn().mockReturnValue({
+    logDisplayOffererClick: props => mockLogDisplayOffererClick(props),
+  })
+})
+
 const renderHomePage = ({ store }) => {
   const utils = render(
     <Provider store={store}>
@@ -294,6 +302,17 @@ describe('offererDetailsLegacy', () => {
     expect(
       within(venues[0]).queryByText('Offre numérique')
     ).not.toBeInTheDocument()
+  })
+
+  it.only('should called tracker when clicking on Modifier', async () => {
+    // given
+    renderHomePage({ store })
+
+    // when
+    userEvent.click(screen.getByText('Modifier'))
+
+    // then
+    expect(mockLogDisplayOffererClick).toHaveBeenCalledTimes(1)
   })
 
   describe('when selected offerer change', () => {

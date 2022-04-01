@@ -23,6 +23,7 @@ export interface IUseAnalyticsReturn {
   logReimbursementClick: (page: string) => void
   logLogoutClick: (page: string) => void
   logProClick: (page: string) => void
+  logDisplayOffererClick: () => void
   logCreateOfferClick: (page: string, offererId: string) => void
 }
 
@@ -69,6 +70,7 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logEvent(Events.CLICKED_LOGOUT, { from: page })
   const logProClick = (page: string) =>
     logEvent(Events.CLICKED_PRO, { from: page })
+  const logDisplayOffererClick = () => logEvent(Events.CLICKED_DISPLAY_OFFERER)
   const logCreateVenueClick = (page: string) =>
     logEvent(Events.CLICKED_CREATE_VENUE, { from: page })
   const logCreateOfferClick = (page: string, offererId: string) =>
@@ -91,6 +93,7 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logReimbursementClick,
     logLogoutClick,
     logProClick,
+    logDisplayOffererClick,
   }
 }
 

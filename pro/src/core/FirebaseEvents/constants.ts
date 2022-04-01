@@ -15,4 +15,5 @@ export enum Events {
   CLICKED_REIMBURSEMENT = 'hasClickedReimbursement',
   CLICKED_LOGOUT = 'hasClickedLogout',
   CLICKED_PRO = 'hasClickedPro',
+  CLICKED_DISPLAY_OFFERER = 'hasClickedDisplayOfferer',
 }
