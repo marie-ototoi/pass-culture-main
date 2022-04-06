@@ -857,10 +857,18 @@ def get_eligibility_at_date(
 
 
 # TODO: add checks based on the age of the user
+# def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: Optional[EligibilityType]) -> bool:
+#     return (eligibility == EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
+#         eligibility == EligibilityType.AGE18 and not user.has_beneficiary_role
+#     )
+
+
 def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: Optional[EligibilityType]) -> bool:
-    return (eligibility == EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
-        eligibility == EligibilityType.AGE18 and not user.has_beneficiary_role
-    )
+    if eligibility == EligibilityType.UNDERAGE:
+        return user.age in constants.ELIGIBILITY_UNDERAGE_RANGE and not user.has_underage_beneficiary_role
+    if eligibility == EligibilityType.AGE18:
+        return user.age >= 18 and not user.has_beneficiary_role
+    return False
 
 
 def get_activable_identity_fraud_check(user: User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
