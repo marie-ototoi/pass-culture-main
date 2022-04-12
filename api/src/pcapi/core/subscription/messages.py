@@ -100,7 +100,7 @@ DMS_NAME_INVALID_ERROR_MESSAGE = """Bonjour,
 
                             L'équipe du pass Culture"""
 
-
+# dossier ubble déposé (statut PROCESSING)
 def on_review_pending(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -110,6 +110,7 @@ def on_review_pending(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud check not ok (erreur inconnue?)
 def on_ubble_journey_cannot_continue(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -121,6 +122,7 @@ def on_ubble_journey_cannot_continue(user: users_models.User) -> None:
     repository.save(message)
 
 
+# revue admin KO
 def on_fraud_review_ko(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -130,6 +132,7 @@ def on_fraud_review_ko(user: users_models.User) -> None:
     repository.save(message)
 
 
+# revue admin redirection dms
 def on_redirect_to_dms_from_idcheck(user: users_models.User) -> None:
     today = datetime.date.today()
     message = models.SubscriptionMessage(
@@ -142,6 +145,7 @@ def on_redirect_to_dms_from_idcheck(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud check not ok (différence entre prénom/nom donné dans profil (ou dans précédente activation de compte) et dans la cni) => il faudrait voir si on a beaucoup d'erreur comme ça je pense
 def on_idcheck_document_data_not_matching(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -153,6 +157,7 @@ def on_idcheck_document_data_not_matching(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud check not ok car document non supportée (plus de tentative ubble restante)
 def on_idcheck_document_not_supported(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -164,6 +169,7 @@ def on_idcheck_document_not_supported(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud check not ok car document non supporté (tentative ubble restante)
 def on_idcheck_document_not_supported_with_retry(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -175,6 +181,7 @@ def on_idcheck_document_not_supported_with_retry(user: users_models.User) -> Non
     repository.save(message)
 
 
+# ubble processed : fraud check not ok car doc expiré (plus de tentative ubble restante)
 def on_idcheck_invalid_document_date(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -186,6 +193,7 @@ def on_idcheck_invalid_document_date(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud check not ok car doc expiré (tentative ubble restante)
 def on_idcheck_invalid_document_date_with_retry(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -197,6 +205,7 @@ def on_idcheck_invalid_document_date_with_retry(user: users_models.User) -> None
     repository.save(message)
 
 
+# ubble processed : fraud check not ok car doc illisible (plus de tentative ubble restante)
 def on_idcheck_unread_document(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -208,6 +217,7 @@ def on_idcheck_unread_document(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud check not ok car doc illisible (tentative ubble restante)
 def on_idcheck_unread_document_with_retry(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -219,6 +229,7 @@ def on_idcheck_unread_document_with_retry(user: users_models.User) -> None:
     repository.save(message)
 
 
+# webhook dms : dossier refusé
 def on_idcheck_rejected(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -228,6 +239,7 @@ def on_idcheck_rejected(user: users_models.User) -> None:
     repository.save(message)
 
 
+# webhook dms : dossier refusé
 def on_dms_application_received(user: users_models.User) -> None:
     today = datetime.date.today()
     message = models.SubscriptionMessage(
@@ -238,6 +250,7 @@ def on_dms_application_received(user: users_models.User) -> None:
     repository.save(message)
 
 
+# webhook dms : dossier en construction et ddn éligible OU dossier en instruction
 def on_dms_application_refused(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -247,6 +260,8 @@ def on_dms_application_refused(user: users_models.User) -> None:
     repository.save(message)
 
 
+# webhook dms dossier accepté ou cron dms : fraud check not ok pour cause duplicat CNI ou prenom/nom/ddn
+# ubble processed : fraud check not ok pour cause duplicat CNI ou prenom/nom/ddn
 def on_duplicate_user(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -258,6 +273,7 @@ def on_duplicate_user(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud_check not ko non éligible -> a priori on ne rentre pas dans ce cas car il ya too young ou too old
 def on_not_eligible(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -267,6 +283,7 @@ def on_not_eligible(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud_check not ko too young ET pas les autres erreurs qui sont prioritaires (duplicat, expired, etc)
 def on_age_too_young(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -276,6 +293,7 @@ def on_age_too_young(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud_check not ko too old ET pas les autres erreurs prioritaires (duplicat, expired, etc)
 def on_age_too_old(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -285,10 +303,52 @@ def on_age_too_old(user: users_models.User) -> None:
     repository.save(message)
 
 
+# ubble processed : fraud_check not ko already beneficiary ET pas les autres erreurs prioritaire
+# educonnect KO already beneficiairy
 def on_already_beneficiary(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
         userMessage="Tu es déjà bénéficaire.",
+        popOverIcon=models.PopOverIcon.ERROR,
+    )
+    repository.save(message)
+
+
+# webhook dms : état en construction et non éligibile OU (tous statuts) erreur de parsing sur les champs DDN/ID/prénom/nom/code postal
+def on_dms_application_parsing_errors_but_updatables_values(user: users_models.User, error_fields: list[str]) -> None:
+    user_message = _generate_form_field_error(
+        "Il semblerait que le champ ‘{formatted_error_fields}’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
+        "Il semblerait que les champs ‘{formatted_error_fields}’ soient erronés. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier.",
+        error_fields,
+    )
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=user_message,
+        popOverIcon=models.PopOverIcon.WARNING,
+    )
+    repository.save(message)
+
+
+# webhook dms : erreur de parsing inattendue
+def on_dms_application_parsing_errors(user: users_models.User, error_fields: list[str]) -> None:
+    user_message = _generate_form_field_error(
+        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘{formatted_error_fields}’ n’est pas valide.",
+        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car les champs ‘{formatted_error_fields}’ ne sont pas valides.",
+        error_fields,
+    )
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=user_message,
+        popOverIcon=models.PopOverIcon.WARNING,
+    )
+    repository.save(message)
+
+
+# après User Profiling qui n'a pas un risque LOW -> c'est inchohérent puisque si le risque est MEDIUM on laisse continuer mais il aura ce message
+def on_user_subscription_journey_stopped(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton inscription n'a pas pu aboutir.",
         popOverIcon=models.PopOverIcon.ERROR,
     )
     repository.save(message)
@@ -316,40 +376,3 @@ def _generate_form_field_error(error_text_singular: str, error_text_plural: str,
         user_message = error_text_plural.format(formatted_error_fields=field_text)
 
     return user_message
-
-
-def on_dms_application_parsing_errors_but_updatables_values(user: users_models.User, error_fields: list[str]) -> None:
-    user_message = _generate_form_field_error(
-        "Il semblerait que le champ ‘{formatted_error_fields}’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
-        "Il semblerait que les champs ‘{formatted_error_fields}’ soient erronés. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier.",
-        error_fields,
-    )
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage=user_message,
-        popOverIcon=models.PopOverIcon.WARNING,
-    )
-    repository.save(message)
-
-
-def on_dms_application_parsing_errors(user: users_models.User, error_fields: list[str]) -> None:
-    user_message = _generate_form_field_error(
-        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘{formatted_error_fields}’ n’est pas valide.",
-        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car les champs ‘{formatted_error_fields}’ ne sont pas valides.",
-        error_fields,
-    )
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage=user_message,
-        popOverIcon=models.PopOverIcon.WARNING,
-    )
-    repository.save(message)
-
-
-def on_user_subscription_journey_stopped(user: users_models.User) -> None:
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage="Ton inscription n'a pas pu aboutir.",
-        popOverIcon=models.PopOverIcon.ERROR,
-    )
-    repository.save(message)
