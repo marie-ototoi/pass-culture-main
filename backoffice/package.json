@@ -9,6 +9,7 @@
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.1",
     "eslint-config-prettier": "^8.5.0",
+    "firebase-tools": "^10.6.0",
     "flush-promises": "^1.0.2",
     "jest-watch-typeahead": "0.6.5"
   },
@@ -34,7 +35,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "firebase deploy --only hosting --debug"
   },
   "eslintConfig": {
     "extends": [
