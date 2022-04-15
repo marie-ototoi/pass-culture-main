@@ -40,3 +40,8 @@ tests/result_output.txt
 # misc
 /.vscode/
 .dccache
+
+
+# node.js
+node_modules
+
