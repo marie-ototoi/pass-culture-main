@@ -37,6 +37,8 @@ def get_latest_subscription_message(user: users_models.User) -> typing.Optional[
 def activate_beneficiary_for_eligibility(
     user: users_models.User, fraud_check: fraud_models.BeneficiaryFraudCheck, eligibility: users_models.EligibilityType
 ) -> users_models.User:
+    user_id = user.id
+    say_hello(user_id)
     deposit_source = fraud_check.get_detailed_source()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:
@@ -49,7 +51,7 @@ def activate_beneficiary_for_eligibility(
     else:
         raise exceptions.InvalidEligibilityTypeException()
 
-    if "apps_flyer" in user.externalIds:  # type: ignore [operator]
+    if "apps_flyer" in user.externalIds:
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
     deposit = payments_api.create_deposit(
@@ -72,6 +74,10 @@ def activate_beneficiary_for_eligibility(
     if not accepted_as_beneficiary.send_accepted_as_beneficiary_email(user=user):
         logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
     return user
+
+
+def say_hello(uid: str) -> None:
+    print(uid)
 
 
 def activate_beneficiary(user: users_models.User, deposit_source: str = None) -> users_models.User:
