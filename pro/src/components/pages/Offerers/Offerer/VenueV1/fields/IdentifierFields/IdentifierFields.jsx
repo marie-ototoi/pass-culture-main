@@ -2,7 +2,6 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
-import { removeWhitespaces } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
 import HiddenField from 'components/layout/form/fields/HiddenField'
@@ -13,6 +12,7 @@ import Icon from 'components/layout/Icon'
 import VenueLabel from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueLabel'
 import VenueType from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueType'
 import { CheckboxField } from 'ui-kit'
+import { removeWhitespaces } from 'utils/string'
 
 import getLabelFromList from './utils/getLabelFromList'
 

@@ -17,4 +17,34 @@ export const composeValidators =
     return undefined
   }
 
-export default composeValidators
+export const createParseNumberValue =
+  (type: 'number' | 'text') =>
+  (value: number | string): string | number | null => {
+    if (typeof value === undefined) {
+      return null
+    }
+    if (type === 'text') {
+      return value
+    }
+
+    let stringValue = String(value)
+    if (stringValue === '') {
+      return ''
+    }
+    if (stringValue.includes(',')) {
+      stringValue = stringValue.replace(/,/g, '.')
+    }
+
+    return stringValue.includes('.')
+      ? parseFloat(stringValue)
+      : parseInt(stringValue, 10)
+  }
+
+export const createValidateRequiredField =
+  (error: string, type?: 'text' | 'number') => (value: string) => {
+    if (type === 'number' && value !== '') return undefined
+    if (typeof value === 'string' && value !== '') return undefined
+    return error
+  }
+
+export default createValidateRequiredField
