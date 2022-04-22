@@ -9,8 +9,6 @@ import requests_mock
 from pcapi.core import mails
 import pcapi.core.mails.backends.mailjet
 from pcapi.core.mails.models import sendinblue_models
-from pcapi.core.mails.models.models import Email
-from pcapi.core.mails.models.models import EmailStatus
 from pcapi.core.testing import override_settings
 from pcapi.tasks.serialization import sendinblue_tasks
 
@@ -33,17 +31,11 @@ class SendTest:
     def test_send(self):
         successful = mails.send(recipients=self.recipients, data=self.data)
         assert successful
-        email = Email.query.one()
-        assert email.status == EmailStatus.SENT
-        assert email.content == self.expected_sent_data
 
     @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.testing.FailingBackend")
     def test_send_failure(self):
         successful = mails.send(recipients=self.recipients, data=self.data)
         assert not successful
-        email = Email.query.one()
-        assert email.status == EmailStatus.ERROR
-        assert email.content == self.expected_sent_data
 
     @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_send_with_mailjet(self):
