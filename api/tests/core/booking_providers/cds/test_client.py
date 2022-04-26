@@ -22,6 +22,7 @@ class CineDigitalServiceGetShowTest:
             {
                 "id": 1,
                 "internet_remaining_place": 10,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -30,24 +31,29 @@ class CineDigitalServiceGetShowTest:
                     {"tariffid": {"id": 3}},
                     {"tariffid": {"id": 2}},
                 ],
+                "screenid": {"id": 10},
             },
             {
                 "id": 2,
                 "internet_remaining_place": 30,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [
                     {"tariffid": {"id": 96}},
                 ],
+                "screenid": {"id": 10},
             },
             {
                 "id": 3,
                 "internet_remaining_place": 100,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
+                "screenid": {"id": 20},
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -69,10 +75,12 @@ class CineDigitalServiceGetShowTest:
             {
                 "id": 1,
                 "internet_remaining_place": 10,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
+                "screenid": {"id": 10},
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -98,32 +106,38 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
             {
                 "id": 1,
                 "internet_remaining_place": 10,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [
                     {"tariffid": {"id": 2}},
                 ],
+                "screenid": {"id": 10},
             },
             {
                 "id": 2,
                 "internet_remaining_place": 30,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [
                     {"tariffid": {"id": 2}},
                 ],
+                "screenid": {"id": 10},
             },
             {
                 "id": 3,
                 "internet_remaining_place": 100,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [
                     {"tariffid": {"id": 2}},
                 ],
+                "screenid": {"id": 10},
             },
         ]
         mocked_get_resource.return_value = json_shows
