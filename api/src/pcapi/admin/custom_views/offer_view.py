@@ -312,7 +312,7 @@ class OfferView(BaseAdminView):
                     if offer.venue.bookingEmail
                     else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
                 )
-                send_offer_validation_status_update_email(offer, new_validation, recipients)
+                send_offer_validation_status_update_email(offer, new_validation, recipients)  # type: ignore [arg-type]
                 send_offer_validation_notification_to_administration(new_validation, offer)  # type: ignore [arg-type]
 
                 flash("Le statut de l'offre a bien été modifié", "success")
