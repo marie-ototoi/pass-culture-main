@@ -118,7 +118,7 @@ class BookingViewTest:
 
         response = client.get(response.location)
         content = response.data.decode(response.charset)
-        assert "L&#39;opération a échoué : la réservation a déjà été remboursée" in content
+        assert "L&#39;opération a échoué : La réservation a déjà été remboursée" in content
 
         booking = Booking.query.get(booking.id)
         assert not booking.status == BookingStatus.CANCELLED
@@ -136,7 +136,7 @@ class BookingViewTest:
 
         response = client.get(response.location)
         content = response.data.decode(response.charset)
-        assert "L&#39;opération a échoué : la réservation a déjà été annulée" in content
+        assert "L&#39;opération a échoué : Cette réservation a déjà été annulée" in content
 
         booking = Booking.query.get(booking.id)
         assert booking.status == BookingStatus.CANCELLED

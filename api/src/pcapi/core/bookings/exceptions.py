@@ -70,6 +70,11 @@ class BookingHasAlreadyBeenUsed(ClientError):
         super().__init__("booking", "Cette offre a déjà été utilisée")
 
 
+class BookingIsAlreadyRefunded(ClientError):
+    def __init__(self) -> None:
+        super().__init__("booking", "La réservation a déjà été remboursée")
+
+
 class BookingIsAlreadyCancelled(ClientError):
     def __init__(self) -> None:
         super().__init__("booking", "Cette réservation a déjà été annulée")
@@ -83,6 +88,15 @@ class BookingIsNotCancelledCannotBeUncancelled(ClientError):
 class BookingIsCancelled(ClientError):
     def __init__(self) -> None:
         super().__init__("booking", "Cette réservation a été annulée et ne peut être marquée comme étant utilisée")
+
+
+class BookingRefused(ClientError):
+    def __init__(self) -> None:
+        super().__init__("booking", "Cette réservation a été annulée et ne peut être marquée comme étant utilisée")
+
+
+class BookingIsNotConfirmed(ClientError):
+    pass
 
 
 class CannotCancelConfirmedBooking(ClientError):
@@ -109,14 +123,6 @@ class CannotDeleteVenueWithBookingsException(ClientError):
             "cannotDeleteVenueWithBookingsException",
             "Lieu non supprimable car il contient des réservations",
         )
-
-
-class BookingAlreadyCancelled(Exception):
-    pass
-
-
-class BookingAlreadyRefunded(Exception):
-    pass
 
 
 class CannotMarkAsConfirmedIndividualBooking(Exception):

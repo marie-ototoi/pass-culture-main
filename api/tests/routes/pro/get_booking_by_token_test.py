@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 
 import pytest
 
+import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
@@ -12,7 +13,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import api_errors
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
 
@@ -236,14 +236,14 @@ class Returns403Test:
             f"/bookings/token/{unconfirmed_booking.token}?email={unconfirmed_booking.individualBooking.user.email}"
             f"&offer_id={humanize(unconfirmed_booking.stock.offerId)}"
         )
-        mocked_check_is_usable.side_effect = api_errors.ForbiddenError(errors={"booking": ["Not confirmed"]})
+        mocked_check_is_usable.side_effect = bookings_exceptions.BookingIsNotConfirmed("booking", "")
 
         # When
         response = client.get(url)
 
         # Then
         assert response.status_code == 403
-        assert response.json["booking"] == ["Not confirmed"]
+        assert response.json["booking"] == ["Cette réservation n'a pas été confirmée"]
 
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_refunded(self, client):

@@ -199,7 +199,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        assert "Veuillez attendre" in response.json["booking"][0]
+        assert response.json["booking"] == ["Cette réservation n'a pas été confirmée"]
 
     def test_when_booking_is_refunded(self, client):
         # Given
