@@ -60,7 +60,7 @@ class SeatmapCDS(BaseModel):
 
 
 class CancelBookingCDS(BaseModel):
-    barcodes: list[int]
+    barcodes: list[str]
     paiement_type_id: int = Field(alias="paiementtypeid")
 
 
