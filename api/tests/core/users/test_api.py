@@ -223,6 +223,7 @@ def _assert_user_suspension_history(
         assert not last_suspension_event.reasonCode
 
 
+@pytest.mark.usefixtures("db_session")
 class SuspendAccountTest:
     def test_suspend_admin(self):
         user = users_factories.AdminFactory()
@@ -291,6 +292,44 @@ class SuspendAccountTest:
         assert booking.status is not BookingStatus.CANCELLED
 
         _assert_user_suspension_history(pro, SuspensionEventType.SUSPENDED, reason, actor)
+
+    @pytest.mark.usefixtures("db_session")
+    class PasswordChangeTest:
+        @pytest.mark.parametrize(
+            "reason",
+            [users_constants.SuspensionReason.UPON_USER_REQUEST, users_constants.SuspensionReason.FRAUD_SUSPICION],
+        )
+        def test_with_feature_flag_activated(self, reason):
+            """
+            Test that a suspended account, for any reason, keeps the
+            same password when the feature flag is activated.
+            """
+            user = users_factories.BeneficiaryGrant18Factory()
+            expected_password_hash = user.password
+
+            with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+                users_api.suspend_account(user, reason, user)
+
+                user = User.query.get(user.id)
+                assert user.password == expected_password_hash
+
+        @pytest.mark.parametrize(
+            "reason",
+            [users_constants.SuspensionReason.UPON_USER_REQUEST, users_constants.SuspensionReason.FRAUD_SUSPICION],
+        )
+        def test_with_feature_flag_not_active(self, reason):
+            """
+            Test that a suspended account, for any reason, does not
+            keep same password when the feature flag is deactivated.
+            """
+            user = users_factories.BeneficiaryGrant18Factory()
+            expected_password_hash = user.password
+
+            with override_features(ALLOW_ACCOUNT_REACTIVATION=False):
+                users_api.suspend_account(user, reason, user)
+
+                user = User.query.get(user.id)
+                assert user.password != expected_password_hash
 
 
 class UnsuspendAccountTest:

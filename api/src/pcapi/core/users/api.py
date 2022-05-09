@@ -325,12 +325,14 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: Optio
     """
     Suspend a user's account:
         * mark as suspended (suspension history);
-        * prevent it to log in and remove its admin role if any;
+        * remove its admin role if any;
         * cancel its bookings;
 
-    Note:
-        `actor` can be None if and only if this function is called from
-        an automated task (eg cron).
+    Notes:
+        * `actor` can be None if and only if this function is called
+        from an automated task (eg cron).
+        * a user who suspends his account should be able to connect to
+        the application in order to access to some restricted actions.
     """
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
@@ -342,7 +344,14 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: Optio
         reasonCode=reason,
     )
     user.remove_admin_role()
-    user.setPassword(secrets.token_urlsafe(30))
+
+    # TODO (jeremieb - 2022-05-13) remove this condition once the new
+    # account reactivation process is done. Otherwise suspended accounts
+    # might be able to connect to the app but won't be redirected
+    # and be stuck.
+    if not FeatureToggle.ALLOW_ACCOUNT_REACTIVATION.is_active():
+        user.setPassword(secrets.token_urlsafe(30))
+
     repository.save(user)
     repository.save(user_suspension)
 
