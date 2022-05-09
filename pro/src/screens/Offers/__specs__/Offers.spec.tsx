@@ -312,7 +312,7 @@ describe('screen Offers', () => {
         renderOffers(props, store)
 
         // Then
-        expect(screen.getByDisplayValue('Tous les modes')).toBeInTheDocument()
+        expect(screen.getByDisplayValue('Tous')).toBeInTheDocument()
       })
 
       it('should render creation mode filter with given creation mode selected', async () => {
@@ -349,7 +349,7 @@ describe('screen Offers', () => {
       it('should allow user to select imported creation mode filter', () => {
         // Given
         renderOffers(props, store)
-        const creationModeSelect = screen.getByDisplayValue('Tous les modes')
+        const creationModeSelect = screen.getByDisplayValue('Tous')
 
         // When
         fireEvent.change(creationModeSelect, { target: { value: 'imported' } })
