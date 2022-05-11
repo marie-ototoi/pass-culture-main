@@ -12,6 +12,7 @@ import Signup from '../Signup'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadFeatures: jest.fn(),
+  getUserInformations: jest.fn().mockResolvedValue({}),
 }))
 
 describe('src | components | pages | Signup', () => {
