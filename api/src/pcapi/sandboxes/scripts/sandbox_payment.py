@@ -5,6 +5,7 @@ import typing
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -46,9 +47,16 @@ def save_users_with_deposits() -> typing.Tuple[users_factories.UserFactory, ...]
 
 def save_offerer_with_iban() -> typing.Tuple[Venue, ...]:
     offerer_with_iban = create_offerer(siren="180046021", name="Philarmonie")
-    venue_with_siret = create_venue(offerer=offerer_with_iban, siret="18004602100026", is_virtual=False)
-    venue_without_siret = create_venue(offerer=offerer_with_iban, siret=None, is_virtual=False, comment="pas de siret")
-    venue_online = create_venue(offerer=offerer_with_iban, siret=None, is_virtual=True)
+    venue_with_siret = offerers_factories.VenueFactory(
+        managingOfferer=offerer_with_iban,
+        siret="18004602100026",
+    )
+    venue_without_siret = offerers_factories.VenueFactory(
+        managingOfferer=offerer_with_iban,
+        siret=None,
+        comment="pas de siret",
+    )
+    venue_online = offerers_factories.VirtualVenueFactory(managingOfferer=offerer_with_iban)
     offers_factories.BankInformationFactory(
         offerer=offerer_with_iban,
         bic="TRPUFRP1",
@@ -62,8 +70,14 @@ def save_offerer_with_iban() -> typing.Tuple[Venue, ...]:
 
 def save_offerer_without_iban() -> typing.Tuple[Venue, ...]:
     offerer_without_iban = create_offerer(siren="213400328", name="Béziers")
-    venue_with_siret_with_iban = create_venue(offerer=offerer_without_iban, siret="21340032800018", is_virtual=False)
-    venue_with_siret_without_iban = create_venue(offerer=offerer_without_iban, siret="21340032800802", is_virtual=False)
+    venue_with_siret_with_iban = offerers_factories.VenueFactory(
+        offerer=offerer_without_iban,
+        siret="21340032800018",
+    )
+    venue_with_siret_without_iban = offerers_factories.VenueFactory(
+        managingOfferer=offerer_without_iban,
+        siret="21340032800802",
+    )
     venue_online = create_venue(offerer=offerer_without_iban, siret=None, is_virtual=True)
 
     offers_factories.BankInformationFactory(
