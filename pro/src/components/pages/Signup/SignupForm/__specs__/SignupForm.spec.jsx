@@ -330,6 +330,16 @@ describe('src | components | pages | Signup | SignupForm', () => {
         await userEvent.click(submitButton)
         expect(pcapi.signup).toHaveBeenCalledTimes(1)
         waitFor(() => expect(screen.findByText("Le téléphone doit faire moins de 20 caractères")).resolves.toBeInTheDocument())
+
+        waitFor(() => expect(submitButton).toBeDisabled())
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Téléphone/,
+          }),
+          '0722332233'
+        )
+        await userEvent.tab()
+        waitFor(() => expect(submitButton).toBeEnabled())
       })
     })
   })

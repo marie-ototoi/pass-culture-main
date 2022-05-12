@@ -74,6 +74,7 @@ const SignupForm = (): JSX.Element => {
     notification.error(
       'Une ou plusieurs erreurs sont présentes dans le formulaire.'
     )
+    formik.setSubmitting(false)
   }
 
   const formik = useFormik({
