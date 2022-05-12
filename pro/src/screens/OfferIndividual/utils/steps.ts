@@ -1,4 +1,4 @@
-import { generatePath } from 'react-router-dom'
+import { generatePath, matchPath, useLocation } from 'react-router-dom'
 
 import { Offer } from 'core/Offers/types'
 import { IStepPattern, Step } from 'new_components/Breadcrumb'
@@ -10,9 +10,12 @@ import { OFFER_FORM_STEP_IDS } from '../constants'
 export const getStepsOffer = (
   offer?: Offer
 ): {
-  stepList: Step[]
   activeSteps: string[]
+  currentStep: IStepPattern
+  stepList: Step[]
 } => {
+  const location = useLocation()
+
   const hasOffer = offer !== undefined
   const hasStock = offer !== undefined && offer.stocks.length > 0
 
@@ -42,6 +45,12 @@ export const getStepsOffer = (
     },
   ]
 
+  let currentStep = stepPatternList.find(
+    (stepPattern: IStepPattern) =>
+      stepPattern.path && matchPath(location.pathname, stepPattern.path)
+  )
+  if (!currentStep) currentStep = stepPatternList[0]
+
   const activeSteps: string[] = stepPatternList
     .filter((stepPattern: IStepPattern): boolean => stepPattern.isActive)
     .map((stepPattern: IStepPattern) => stepPattern.id)
@@ -56,5 +65,5 @@ export const getStepsOffer = (
     }
     return step
   })
-  return { activeSteps, stepList }
+  return { activeSteps, currentStep, stepList }
 }

@@ -5,7 +5,6 @@ import { useHistory } from 'react-router-dom'
 import Spinner from 'components/layout/Spinner'
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import {
   OfferIndividualForm,
@@ -38,7 +37,7 @@ const Informations = ({
   const history = useHistory()
 
   // call getStep with offer when this screen get it as prop
-  const { stepList, activeSteps } = getStepsOffer(fakeOffer)
+  const { activeSteps } = getStepsOffer(fakeOffer)
   const handleNextStep = async () => formik.handleSubmit()
 
   const onSubmit = async (formValues: IOfferIndividualFormValues) => {
@@ -54,40 +53,25 @@ const Informations = ({
   })
 
   return (
-    <OfferFormLayout>
-      <OfferFormLayout.TitleBlock>
-        <h1>Créer une offe</h1>
-      </OfferFormLayout.TitleBlock>
+    <FormikProvider value={{ ...formik, resetForm }}>
+      <form onSubmit={formik.handleSubmit}>
+        {isParentReady ? (
+          <OfferIndividualForm
+            offererNames={offererNames}
+            venueList={venueList}
+          />
+        ) : (
+          <Spinner />
+        )}
 
-      <OfferFormLayout.Stepper>
-        <Breadcrumb
-          activeStep={OFFER_FORM_STEP_IDS.INFORMATIONS}
-          steps={Object.values(stepList)}
-          styleType={BreadcrumbStyle.TAB}
-        />
-      </OfferFormLayout.Stepper>
-
-      <OfferFormLayout.Content>
-        <FormikProvider value={{ ...formik, resetForm }}>
-          <form onSubmit={formik.handleSubmit}>
-            {isParentReady ? (
-              <OfferIndividualForm
-                offererNames={offererNames}
-                venueList={venueList}
-              />
-            ) : (
-              <Spinner />
-            )}
-            <OfferFormLayout.ActionBar>
-              <ActionBar
-                disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.STOCKS)}
-                onClickNext={handleNextStep}
-              />
-            </OfferFormLayout.ActionBar>
-          </form>
-        </FormikProvider>
-      </OfferFormLayout.Content>
-    </OfferFormLayout>
+        <OfferFormLayout.ActionBar>
+          <ActionBar
+            disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.STOCKS)}
+            onClickNext={handleNextStep}
+          />
+        </OfferFormLayout.ActionBar>
+      </form>
+    </FormikProvider>
   )
 }
 

@@ -2,7 +2,6 @@ import { useFormik, FormikProvider } from 'formik'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 
 import { ActionBar } from '../ActionBar'
@@ -12,7 +11,7 @@ import { getStepsOffer } from '../utils/steps'
 const Stocks = (): JSX.Element => {
   const history = useHistory()
   // call getStep with offer when this screen get it as prop
-  const { stepList, activeSteps } = getStepsOffer(fakeOffer)
+  const { activeSteps } = getStepsOffer(fakeOffer)
 
   const handleNextStep = () => {
     // TODO get offerId from url query string
@@ -41,37 +40,21 @@ const Stocks = (): JSX.Element => {
   })
 
   return (
-    <OfferFormLayout>
-      <OfferFormLayout.TitleBlock>
-        <h1>Créer une offe</h1>
-      </OfferFormLayout.TitleBlock>
+    <FormikProvider value={{ ...formik, resetForm }}>
+      <h2>Stock & Prix</h2>
 
-      <OfferFormLayout.Stepper>
-        <Breadcrumb
-          activeStep={OFFER_FORM_STEP_IDS.STOCKS}
-          steps={Object.values(stepList)}
-          styleType={BreadcrumbStyle.TAB}
-        />
-      </OfferFormLayout.Stepper>
+      <form onSubmit={formik.handleSubmit}>
+        <p> TODO stock form </p>
 
-      <OfferFormLayout.Content>
-        <h2>Stock & Prix</h2>
-
-        <FormikProvider value={{ ...formik, resetForm }}>
-          <form onSubmit={formik.handleSubmit}>
-            <p> TODO stock form </p>
-
-            <OfferFormLayout.ActionBar>
-              <ActionBar
-                disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.SUMMARY)}
-                onClickNext={handleNextStep}
-                onClickPrevious={handlePreviousStep}
-              />
-            </OfferFormLayout.ActionBar>
-          </form>
-        </FormikProvider>
-      </OfferFormLayout.Content>
-    </OfferFormLayout>
+        <OfferFormLayout.ActionBar>
+          <ActionBar
+            disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.SUMMARY)}
+            onClickNext={handleNextStep}
+            onClickPrevious={handlePreviousStep}
+          />
+        </OfferFormLayout.ActionBar>
+      </form>
+    </FormikProvider>
   )
 }
 
