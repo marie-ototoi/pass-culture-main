@@ -316,12 +316,11 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
 @log_cron_with_transaction
 def handle_inactive_dms_applications_cron() -> None:
     # DMS_ENROLLMENT_PROCEDURE_ID_v4_ET is excluded because the review delay is longer
-    procedures = [
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR,
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING,
-        settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID,
-    ]
+    handle_inactive_dms_applications(
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR, skip_never_eligible_applicant=settings.IS_TESTING
+    )
+    handle_inactive_dms_applications(settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
+    handle_inactive_dms_applications(settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID, skip_never_eligible_applicant=True)
+
     if settings.IS_PROD:
-        procedures.append(DMS_OLD_PROCEDURE_ID)
-    for procedure_id in procedures:
-        handle_inactive_dms_applications(procedure_id)
+        handle_inactive_dms_applications(DMS_OLD_PROCEDURE_ID)
