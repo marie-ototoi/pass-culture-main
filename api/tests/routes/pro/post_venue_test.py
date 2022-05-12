@@ -209,7 +209,6 @@ def test_should_return_403_when_user_is_not_managing_offerer_create_venue(app):
 venue_malformed_test_data = [
     ({"description": "a" * 1024}, "description"),
     ({"contact": {"email": "not_an_email"}}, "contact.email"),
-    ({"contact": {"website": "not_an_url"}}, "contact.website"),
     ({"contact": {"phoneNumber": "not_a_phone_number"}}, "contact.phoneNumber"),
     ({"contact": {"social_medias": {"a": "b"}}}, "contact.socialMedias.__key__"),
     ({"contact": {"social_medias": {"facebook": "not_an_url"}}}, "contact.socialMedias.facebook"),

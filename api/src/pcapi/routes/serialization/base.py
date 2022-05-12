@@ -22,7 +22,7 @@ class VenueContactModel(BaseModel):
         extra = pydantic.Extra.forbid
 
     email: Optional[pydantic.EmailStr]
-    website: Optional[pydantic.HttpUrl]
+    website: Optional[str]
     phone_number: Optional[str]
     social_medias: Optional[SocialMedias]
 
