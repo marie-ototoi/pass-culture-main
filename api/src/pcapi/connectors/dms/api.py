@@ -225,7 +225,11 @@ def parse_beneficiary_information_graphql(
         label = field.label
         value = field.value
 
-        if label in (dms_models.FieldLabel.DEPARTMENT_FR.value, dms_models.FieldLabel.DEPARTMENT_ET.value):
+        if label in (
+            dms_models.FieldLabel.DEPARTMENT_FR.value,
+            dms_models.FieldLabel.DEPARTMENT_ET.value,
+            dms_models.FieldLabel.DEPARTMENT_OLD.value,
+        ):
             department = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)  # type: ignore [type-var, union-attr]
         elif label in (dms_models.FieldLabel.BIRTH_DATE_ET.value, dms_models.FieldLabel.BIRTH_DATE_FR.value):
             try:
@@ -238,6 +242,7 @@ def parse_beneficiary_information_graphql(
         elif label in (
             dms_models.FieldLabel.POSTAL_CODE_ET.value,
             dms_models.FieldLabel.POSTAL_CODE_FR.value,
+            dms_models.FieldLabel.POSTAL_CODE_OLD.value,
         ):
             space_free = str(value).strip().replace(" ", "")
             try:
