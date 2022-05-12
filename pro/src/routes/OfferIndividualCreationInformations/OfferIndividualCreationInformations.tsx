@@ -1,89 +1,69 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import { useHistory } from 'react-router-dom'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 // TODO (rlecellier): rename into getOfferQueryParams
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
-import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters'
-import { getOffererNamesAdapter } from 'core/Offerers/adapters'
+import { useHomePath } from 'hooks'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
   setInitialFormValues,
 } from 'new_components/OfferIndividualForm'
-import {
-  Informations as InformationsScreen,
-  IInformationsProps,
-} from 'screens/OfferIndividual/Informations'
+import { Informations as InformationsScreen } from 'screens/OfferIndividual/Informations'
 
 import { createOfferAdapter } from './adapters'
-
-type TScreenProps = Pick<IInformationsProps, 'offererNames' | 'venueList'>
+import { useOffererNames, useOfferIndividualVenues } from './hooks'
 
 const OfferIndividualCreationInformations = (): JSX.Element | null => {
+  const homePath = useHomePath()
+  const notify = useNotification()
+  const history = useHistory()
   const {
-    currentUser: { isAdmin },
-  } = useCurrentUser()
-  const [isReady, setIsReady] = useState<boolean>(false)
-  const [initialValues, setInitialValues] =
-    useState<IOfferIndividualFormValues>(FORM_DEFAULT_VALUES)
-  const [screenProps, setScreenProps] = useState<TScreenProps>({
-    offererNames: [],
-    venueList: [],
-  })
+    offererNames,
+    isLoading: isOffererLoading,
+    error: offererError,
+  } = useOffererNames()
+  const {
+    offerIndividualVenues: venueList,
+    isLoading: isVenueLoading,
+    error: venueError,
+  } = useOfferIndividualVenues()
 
   const { structure: offererId, lieu: venueId } =
     queryParamsFromOfferer(location)
 
-  useEffect(() => {
-    if (!isReady) {
-      const loadData = async () => {
-        const results = await Promise.all([
-          getOffererNamesAdapter(),
-          getOfferIndividualVenuesAdapter(),
-        ])
+  const hasError = offererError || venueError
+  const isReady = !isOffererLoading && !isVenueLoading
+  let initialValues: IOfferIndividualFormValues = FORM_DEFAULT_VALUES
 
-        if (results.some(res => !res.isOk)) {
-          // TODO (rlecellier): handle error with notification at some point
-          console.error(results?.find(res => !res.isOk)?.message)
-        }
-
-        const [{ payload: offererNames }, { payload: venueList }] = results
-
-        setScreenProps({
-          offererNames,
-          venueList,
-        })
-
-        setInitialValues(values =>
-          setInitialFormValues(
-            values,
-            offererNames,
-            offererId,
-            venueId,
-            venueList
-          )
-        )
-        setIsReady(true)
-      }
-
-      loadData()
-    }
-  }, [isReady, venueId, offererId])
+  if (hasError) {
+    notify.error(offererError || venueError)
+    history.push(homePath)
+  } else if (isReady) {
+    initialValues = setInitialFormValues(
+      initialValues,
+      offererNames,
+      offererId,
+      venueId,
+      venueList
+    )
+  }
 
   return (
-    <div>
+    <>
       {isReady ? (
         <InformationsScreen
-          {...screenProps}
+          offererNames={offererNames}
+          venueList={venueList}
           createOfferAdapter={createOfferAdapter}
           initialValues={initialValues}
-          isParentReady={isReady}
         />
       ) : (
         <Spinner />
       )}
-    </div>
+    </>
   )
 }
 

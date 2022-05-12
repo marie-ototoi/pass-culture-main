@@ -2,7 +2,6 @@ import { useFormik, FormikProvider } from 'formik'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-import Spinner from 'components/layout/Spinner'
 import { useOfferFormSteps, OFFER_FORM_STEP_IDS } from 'core/Offers'
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -21,7 +20,6 @@ export interface IInformationsProps {
     formValues: IOfferIndividualFormValues
   ) => Promise<string | void>
   initialValues: IOfferIndividualFormValues
-  isParentReady: boolean
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
 }
@@ -29,7 +27,6 @@ export interface IInformationsProps {
 const Informations = ({
   createOfferAdapter,
   initialValues,
-  isParentReady,
   offererNames,
   venueList,
 }: IInformationsProps): JSX.Element => {
@@ -54,14 +51,10 @@ const Informations = ({
   return (
     <FormikProvider value={{ ...formik, resetForm }}>
       <form onSubmit={formik.handleSubmit}>
-        {isParentReady ? (
-          <OfferIndividualForm
-            offererNames={offererNames}
-            venueList={venueList}
-          />
-        ) : (
-          <Spinner />
-        )}
+        <OfferIndividualForm
+          offererNames={offererNames}
+          venueList={venueList}
+        />
 
         <OfferFormLayout.ActionBar>
           <ActionBar
