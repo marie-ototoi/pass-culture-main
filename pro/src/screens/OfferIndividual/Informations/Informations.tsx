@@ -3,6 +3,7 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 
 import Spinner from 'components/layout/Spinner'
+import { useOfferFormSteps, OFFER_FORM_STEP_IDS } from 'core/Offers'
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
@@ -11,11 +12,9 @@ import {
   IOfferIndividualFormValues,
   validationSchema,
 } from 'new_components/OfferIndividualForm'
-import { OFFER_FORM_STEP_IDS } from 'screens/OfferIndividual/constants'
 
 import { ActionBar } from '../ActionBar'
 import { fakeOffer } from '../constants'
-import { getStepsOffer } from '../utils/steps'
 
 export interface IInformationsProps {
   createOfferAdapter: (
@@ -37,7 +36,7 @@ const Informations = ({
   const history = useHistory()
 
   // call getStep with offer when this screen get it as prop
-  const { activeSteps } = getStepsOffer(fakeOffer)
+  const { activeSteps } = useOfferFormSteps(fakeOffer)
   const handleNextStep = async () => formik.handleSubmit()
 
   const onSubmit = async (formValues: IOfferIndividualFormValues) => {
