@@ -5,7 +5,7 @@
   "homepage": "/",
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js' --html build/stats.html",
-    "build": "react-scripts build",
+    "build": "react-scripts build ff ./scripts/build_version_file.sh",
     "build:staging": "env-cmd -f .env.staging yarn build",
     "build:testing": "env-cmd -f .env.testing yarn build",
     "build:production": "yarn build",
