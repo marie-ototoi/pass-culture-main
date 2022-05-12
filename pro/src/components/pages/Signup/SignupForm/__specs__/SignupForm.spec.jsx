@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -14,9 +14,6 @@ import { ApiError, HTTP_STATUS } from 'api/helpers'
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
 jest.mock('repository/pcapi/pcapi', () => ({
   signup: jest.fn(),
-  notifyError: () => { },
-  redirectToConfirmation: jest.fn(),
-  showNotification: jest.fn(),
   getUserInformations: jest.fn().mockResolvedValue({}),
 }))
 
@@ -24,8 +21,10 @@ const renderSignUp = storeOveride => {
   const store = configureTestStore(storeOveride)
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={['inscription']}>
-        <SignupForm />
+      <MemoryRouter initialEntries={['/inscription']}>
+        <Route path="/inscription">
+          <SignupForm />
+        </Route>
         <Route path="/accueil">
           <span>I'm logged in as a pro user</span>
         </Route>
@@ -46,8 +45,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
   beforeEach(() => {
     store = {
       data: {},
-      user: {},
-      app: {},
+      user: { initialized: true },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
@@ -217,7 +215,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
         const submitButton = screen.getByRole('button', {
           name: /Créer mon compte/,
         })
-
         await userEvent.type(
           screen.getByRole('textbox', {
             name: /Adresse e-mail/,

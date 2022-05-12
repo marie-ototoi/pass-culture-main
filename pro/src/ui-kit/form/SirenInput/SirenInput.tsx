@@ -2,7 +2,7 @@ import {
   useField,
 } from 'formik'
 import React, { useEffect } from 'react'
-import { humanizeSiren, unhumanizeSiren } from 'core/Offerers/utils'
+import { humanizeSiren } from 'core/Offerers/utils'
 
 import TextInput from '../TextInput'
 
@@ -19,14 +19,14 @@ interface ISirenInputProps {
   label: string
   name?: string
   placeholder?: string
-  form_callback: (value: string) => void
+  onValidSiren: (value: string) => void
 }
 
 const SirenInput = ({
   label,
   name = 'siren',
   placeholder = '123456789',
-  form_callback,
+  onValidSiren,
 }: ISirenInputProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name })
   const { setValue } = helpers;
@@ -34,7 +34,7 @@ const SirenInput = ({
     if (!meta.touched) return
     if (!meta.error) {
       setValue(formatSiren(field.value))
-      form_callback(field.value)
+      onValidSiren(field.value)
     }
   }, [meta.touched, meta.error])
 

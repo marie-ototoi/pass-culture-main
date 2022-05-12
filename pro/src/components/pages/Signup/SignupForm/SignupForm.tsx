@@ -1,8 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
-import * as yup from 'yup'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
@@ -10,7 +8,6 @@ import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { BannerRGS } from 'new_components/Banner'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { removeErrors } from 'store/reducers/errors'
 import { Button, SubmitButton, TextInput } from 'ui-kit'
 import { Checkbox } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -20,89 +17,19 @@ import OperatingProcedures from './OperationProcedures'
 import SirenInput from 'ui-kit/form/SirenInput'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import PasswordInput from 'ui-kit/form/PasswordInput'
+import { validationSchema } from './validationSchema'
+import { ISignupApiErrorResponse, ISignupFormValues } from './types'
+import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
 
-const STATE_ERROR_NAME = 'user'
-
-const validationSchema = yup.object().shape({
-  email: yup
-    .string()
-    .max(120)
-    .email('Veuillez renseigner un email valide')
-    .required('Veuillez renseigner un email'),
-  password: yup
-    .string()
-    .required('Veuillez renseigner un mot de passe')
-    .min(12, 'Votre mot de passe doit contenir au moins 12 caractères')
-    .test(
-      'isPasswordValid',
-      'Votre mot de passe a un format invalide',
-      value => {
-        if (!value) return false
-        const hasUpperCase = /[A-Z]/.test(value)
-        const hasLowerCase = /[a-z]/.test(value)
-        const hasNumber = /[0-9]/.test(value)
-        const hasSymbole = /[!"#$%&'()*+,-./:;<=>?@[\\^_`{|}~\]]/.test(value)
-        if (hasUpperCase && hasLowerCase && hasNumber && hasSymbole) {
-          return true
-        }
-        return false
-      }
-    ),
-  lastName: yup.string().max(128).required('Veuillez renseigner votre nom'),
-  firstName: yup.string().max(128).required('Veuillez renseigner votre prénom'),
-  phoneNumber: yup
-    .string()
-    .min(10, 'Veuillez renseigner au moins 10 chiffres')
-    .max(20, 'Veuillez renseigner moins de 20 chiffres')
-    .required('Veuillez renseigner votre numéro de télphone'),
-  contactOk: yup.string(),
-  siren: yup
-    .string()
-    .required('Veuillez rensigner le siren de votre entreprise')
-    .min(9, 'Veuillez saisir 9 chiffres')
-    .max(11, 'Veuillez saisir 9 chiffres')
-  ,
-})
-
-interface ISignupFormFields {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
-  phoneNumber: string
-  contactOk: string
-  siren: string
-}
-
-interface ISignupFields extends ISignupFormFields {
-  legalUnitValues: {
-    address: string
-    city: string
-    latitude: string | null
-    longitude: string | null
-    name: string
-    postalCode: string
-    siren: string
-  }
-}
-
-interface ISignupApiResponse extends ISignupFormFields {
-  address: string
-  city: string
-  latitude: string | null
-  longitude: string | null
-  name: string
-  postalCode: string
-}
 
 const SignupForm = (): JSX.Element => {
   const history = useHistory()
-  const dispatch = useDispatch()
   const notification = useNotification()
   const { currentUser } = useCurrentUser()
   const location = useLocation()
 
   useEffect(() => {
+    console.log("useEffectRedirection")
     redirectLoggedUser(history, location, currentUser)
   }, [currentUser])
 
@@ -122,28 +49,7 @@ const SignupForm = (): JSX.Element => {
     }
   }, [])
 
-
-  const initialValues = {
-    email: '',
-    password: '',
-    lastName: '',
-    firstName: '',
-    phoneNumber: '',
-    contactOk: '',
-    siren: '',
-    legalUnitValues: {
-      address: '',
-      city: '',
-      latitude: null,
-      longitude: null,
-      name: '',
-      postalCode: '',
-      siren: '',
-    },
-  }
-
-  const onSubmit = (values: ISignupFields) => {
-    dispatch(removeErrors(STATE_ERROR_NAME))
+  const onSubmit = (values: ISignupFormValues) => {
     const { legalUnitValues, ...flattenvalues } = values
     const { firstName, siren } = flattenvalues
     pcapi
@@ -161,18 +67,17 @@ const SignupForm = (): JSX.Element => {
     history.replace('/inscription/confirmation')
   }
 
-  const onHandleFail = (errors: ISignupApiResponse) => {
+  const onHandleFail = (errors: ISignupApiErrorResponse) => {
     for (let field in errors)
       formik.setFieldError(field, (errors as any)[field])
 
-    if (errors) formik.setErrors(errors)
     notification.error(
       'Une ou plusieurs erreurs sont présentes dans le formulaire.'
     )
   }
 
-  const { resetForm, ...formik } = useFormik({
-    initialValues,
+  const formik = useFormik({
+    initialValues: SIGNUP_FORM_DEFAULT_VALUES,
     onSubmit: onSubmit,
     validationSchema,
     validateOnChange: false,
@@ -195,7 +100,7 @@ const SignupForm = (): JSX.Element => {
         <div className="sign-up-tips">
           Tous les champs sont obligatoires sauf mention contraire
         </div>
-        <FormikProvider value={{ ...formik, resetForm }}>
+        <FormikProvider value={formik}>
           <Form onSubmit={formik.handleSubmit}>
             <div className="sign-up-form">
               <TextInput
@@ -222,7 +127,7 @@ const SignupForm = (): JSX.Element => {
               <div className="siren-field">
                 <SirenInput
                   label="SIREN de la structure que vous représentez"
-                  form_callback={getSirenAPIData}
+                  onValidSiren={getSirenAPIData}
                 />
                 <span className="field-siren-value">
                   {formik.values.legalUnitValues.name}
