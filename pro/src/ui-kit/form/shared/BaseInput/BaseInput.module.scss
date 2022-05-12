@@ -24,4 +24,18 @@
   &-wrapper {
     position: relative;
   }
+
+  &-with-right-icon {
+    padding-right: rem.torem(36px);
+  }
+//   &-with-right-button {
+//   }
+  &-right-button {
+    @include forms.input-icon-wrapper(16px);
+    background: none;
+    border: none;
+    height: 100%;
+    margin: 0 16px;
+    outline: none;
+  }
 }

@@ -14,6 +14,12 @@ interface ITextInputProps {
   maxLength?: number
   isOptional?: boolean
   smallLabel?: boolean
+  RightButton?: React.FunctionComponent<
+    React.SVGProps<SVGSVGElement> & {
+      title?: string | undefined
+    }
+  >
+  onButtonClick?: (e: React.MouseEvent<HTMLElement>) => void
   step?: number | string
 }
 
@@ -28,6 +34,8 @@ const TextInput = ({
   maxLength,
   smallLabel,
   isOptional = false,
+  RightButton,
+  onButtonClick,
   step,
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -54,6 +62,8 @@ const TextInput = ({
         placeholder={placeholder}
         step={step}
         type={type}
+        RightButton={RightButton}
+        onButtonClick={onButtonClick}
         {...field}
       />
     </FieldLayout>
