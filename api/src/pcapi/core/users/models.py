@@ -214,6 +214,7 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
     postalCode = sa.Column(sa.String(5), nullable=True)
     publicName = sa.Column(sa.String(255), nullable=False)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
+    recreditAmountToShow2 = sa.Column(sa.Numeric(10, 2), nullable=True)
     roles = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
