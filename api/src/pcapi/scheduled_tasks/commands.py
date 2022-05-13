@@ -319,8 +319,8 @@ def handle_inactive_dms_applications_cron() -> None:
     handle_inactive_dms_applications(
         settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR, skip_never_eligible_applicant=settings.IS_TESTING
     )
-    handle_inactive_dms_applications(settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
-    handle_inactive_dms_applications(settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID, skip_never_eligible_applicant=True)
 
     if settings.IS_PROD:
+        handle_inactive_dms_applications(settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
+        handle_inactive_dms_applications(settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID, skip_never_eligible_applicant=True)
         handle_inactive_dms_applications(DMS_OLD_PROCEDURE_ID)
