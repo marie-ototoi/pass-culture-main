@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import { TOffererName } from 'core/Offerers/types'
 
-const useOffererNames = (): {
+const useOffererNames = (
+  errorHandler: (msg: string) => void
+): {
   isLoading: boolean
   offererNames: TOffererName[]
   error: string
@@ -26,6 +28,12 @@ const useOffererNames = (): {
       loadData()
     }
   }, [isLoading])
+
+  useEffect(() => {
+    if (error) {
+      errorHandler(error)
+    }
+  }, [error])
 
   return { isLoading, offererNames, error }
 }

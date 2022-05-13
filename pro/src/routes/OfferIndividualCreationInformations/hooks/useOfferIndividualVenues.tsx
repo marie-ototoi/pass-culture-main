@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
-const useOfferIndividualVenues = (): {
+const useOfferIndividualVenues = (
+  errorHandler: (msg: string) => void
+): {
   isLoading: boolean
   offerIndividualVenues: TOfferIndividualVenue[]
   error: string
@@ -28,6 +30,12 @@ const useOfferIndividualVenues = (): {
       loadData()
     }
   }, [isLoading])
+
+  useEffect(() => {
+    if (error) {
+      errorHandler(error)
+    }
+  }, [error])
 
   return { isLoading, offerIndividualVenues, error }
 }
